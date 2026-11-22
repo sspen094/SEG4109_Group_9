@@ -1,0 +1,14 @@
+.git
+.gitignore
+docs
+README.md
+.env
+node_modules
+__pycache__
+bin
+obj
+*.log
+*.db
+tests
+.pytest_cache
+requirements-dev.txt

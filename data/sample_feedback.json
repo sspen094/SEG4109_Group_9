@@ -1,0 +1,170 @@
+[
+  {
+    "source": "reddit",
+    "author": "sample_user_01",
+    "posted_at": "2026-11-02T08:14:00",
+    "text": "Thanks LRT for being 20 minutes late again this morning. Stuck at Tunney's Pasture."
+  },
+  {
+    "source": "reddit",
+    "author": "sample_user_02",
+    "posted_at": "2026-11-03T17:40:00",
+    "text": "The 97 was a ghost bus three times this week, app said 2 min then it vanished."
+  },
+  {
+    "source": "reddit",
+    "author": "sample_user_03",
+    "posted_at": "2026-11-04T09:05:00",
+    "text": "Line 1 trains have been smooth all week, nice change."
+  },
+  {
+    "source": "reddit",
+    "author": "sample_user_04",
+    "posted_at": "2026-11-05T12:30:00",
+    "text": "Rideau station elevator broken again, had to carry my stroller up the stairs. Contact me at jane.doe@example.com if the city wants details."
+  },
+  {
+    "source": "reddit",
+    "author": "sample_user_05",
+    "posted_at": "2026-11-06T18:22:00",
+    "text": "Driver on the 88 was rude when I asked about a transfer."
+  },
+  {
+    "source": "reddit",
+    "author": "sample_user_06",
+    "posted_at": "2026-11-06T20:10:00",
+    "text": "Anyone know good brunch spots near the Glebe?"
+  },
+  {
+    "source": "reddit",
+    "author": "sample_user_07",
+    "posted_at": "2026-11-07T07:55:00",
+    "text": "Hurdman platform is filthy, garbage everywhere and it smells."
+  },
+  {
+    "source": "reddit",
+    "author": "sample_user_08",
+    "posted_at": "2026-11-08T23:15:00",
+    "text": "Felt unsafe at Bayview station at night, no security around and a fight broke out."
+  },
+  {
+    "source": "reddit",
+    "author": "sample_user_09",
+    "posted_at": "2026-11-09T08:45:00",
+    "text": "Route 61 to Kanata was packed and 15 minutes late, again."
+  },
+  {
+    "source": "reddit",
+    "author": "sample_user_10",
+    "posted_at": "2026-11-10T16:00:00",
+    "text": "Trillium Line is so much better since it reopened, quick and clean."
+  },
+  {
+    "source": "reddit",
+    "author": "sample_user_11",
+    "posted_at": "2026-11-11T08:20:00",
+    "text": "Line 1 delayed again because of a broken train, stuck at Lyon for 25 minutes."
+  },
+  {
+    "source": "reddit",
+    "author": "sample_user_12",
+    "posted_at": "2026-11-12T17:35:00",
+    "text": "LRT doors broken at uOttawa station, everyone stuck on the platform."
+  },
+  {
+    "source": "reddit",
+    "author": "sample_user_13",
+    "posted_at": "2026-11-13T13:10:00",
+    "text": "The bus at the downtown station was dirty."
+  },
+  {
+    "source": "reddit",
+    "author": "sample_user_14",
+    "posted_at": "2026-11-14T10:00:00",
+    "text": "Lost my bag on the 75 yesterday, if anyone found it call 613-555-0142."
+  },
+  {
+    "source": "reddit",
+    "author": "sample_user_15",
+    "posted_at": "2026-11-15T19:05:00",
+    "text": "u/rideau_rider said the 12 is always crowded at Rideau Centre, can confirm."
+  },
+  {
+    "source": "app_store",
+    "author": "sample_user_16",
+    "posted_at": "2026-11-02T21:00:00",
+    "text": "App crashes every time I open the trip planner. Useless."
+  },
+  {
+    "source": "app_store",
+    "author": "sample_user_17",
+    "posted_at": "2026-11-04T11:30:00",
+    "text": "Live bus tracking is finally reliable, great update."
+  },
+  {
+    "source": "app_store",
+    "author": "sample_user_18",
+    "posted_at": "2026-11-06T14:45:00",
+    "text": "Paying fares with Presto in the app is easy, love it."
+  },
+  {
+    "source": "app_store",
+    "author": "sample_user_19",
+    "posted_at": "2026-11-09T22:10:00",
+    "text": "Login broken after the latest update, cannot buy a pass."
+  },
+  {
+    "source": "app_store",
+    "author": "sample_user_20",
+    "posted_at": "2026-11-11T07:50:00",
+    "text": "Real time arrivals for the 98 are off by 10 minutes, so I missed my bus twice."
+  },
+  {
+    "source": "app_store",
+    "author": "sample_user_21",
+    "posted_at": "2026-11-13T18:25:00",
+    "text": "Fares are too expensive for how unreliable the service is."
+  },
+  {
+    "source": "app_store",
+    "author": "sample_user_22",
+    "posted_at": "2026-11-15T12:00:00",
+    "text": "App is fine I guess."
+  },
+  {
+    "source": "google_maps",
+    "author": "sample_user_23",
+    "posted_at": "2026-11-07T09:30:00",
+    "text": "Hurdman platform is filthy - garbage everywhere and it smells!"
+  },
+  {
+    "source": "google_maps",
+    "author": "sample_user_24",
+    "posted_at": "2026-11-08T15:20:00",
+    "text": "Blair station is clean and the staff were helpful."
+  },
+  {
+    "source": "google_maps",
+    "author": "sample_user_25",
+    "posted_at": "2026-11-10T10:40:00",
+    "text": "Escalator at Lyon station out of service for weeks. Not accessible at all."
+  },
+  {
+    "source": "google_maps",
+    "author": "sample_user_26",
+    "posted_at": "2026-11-12T13:55:00",
+    "text": "Parliament station is great, quick connection to the rest of the line."
+  },
+  {
+    "source": "google_maps",
+    "author": "sample_user_27",
+    "posted_at": "2026-11-14T07:35:00",
+    "text": "Waited 40 minutes at Baseline station in freezing weather, the 88 was cancelled."
+  },
+  {
+    "source": "google_maps",
+    "author": "sample_user_28",
+    "posted_at": "2026-11-16T16:05:00",
+    "text": "Billings Bridge stop is okay, nothing special."
+  }
+]
