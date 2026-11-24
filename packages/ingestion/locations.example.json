@@ -1,0 +1,14 @@
+[
+  {
+    "id": "parliament",
+    "name": "Parliament Station",
+    "aliases": ["Parliament O-Train", "Parlement Station"],
+    "reddit": {
+      "query": "\"Parliament Station\" OR \"Parliament O-Train\"",
+      "subreddit": "ottawa",
+      "limit": 25
+    },
+    "yelpBusinessId": "replace-with-yelp-business-id",
+    "googlePlaceId": "replace-with-google-place-id"
+  }
+]

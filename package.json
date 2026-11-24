@@ -1,0 +1,15 @@
+{
+  "name": "ottawa-transport-review-system",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "ingest": "npm run ingest --workspace @otrs/ingestion --",
+    "test": "npm test --workspaces --if-present"
+  },
+  "engines": {
+    "node": ">=20.12"
+  }
+}

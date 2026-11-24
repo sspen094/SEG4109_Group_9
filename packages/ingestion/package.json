@@ -1,0 +1,14 @@
+{
+  "name": "@otrs/ingestion",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": "./src/index.js",
+  "scripts": {
+    "ingest": "node src/cli.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20.12"
+  }
+}
