@@ -1,0 +1,28 @@
+{
+  "name": "@otrs/reddit-devvit",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "deploy": "npm run typecheck && npm run build && devvit upload",
+    "dev": "devvit playtest",
+    "login": "devvit login",
+    "typecheck": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "dependencies": {
+    "@devvit/start": "0.15.4",
+    "@devvit/web": "0.15.4",
+    "@hono/node-server": "2.1.6",
+    "devvit": "0.15.4",
+    "hono": "4.13.17"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.3",
+    "typescript": "6.0.3",
+    "vite": "8.3.7"
+  }
+}
