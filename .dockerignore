@@ -12,3 +12,8 @@ obj
 tests
 .pytest_cache
 requirements-dev.txt
+.venv
+**/*.db
+**/__pycache__
+data/reviews.jsonl
+packages/reddit-devvit
