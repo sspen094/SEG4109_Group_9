@@ -1,11 +1,62 @@
-stop_name,route_id,aliases,lat,lon
-Tunney's Pasture,1,Tunney's Pasture|Tunney's|Tunneys,45.40343,-75.73527
-Bayview,1,Bayview,45.40935,-75.72222
-Lyon,1,Lyon station|Lyon,45.41888,-75.70406
-Parliament,1,Parliament station,45.42143,-75.69814
-Rideau,1,Rideau station|Rideau Centre,45.42634,-75.69193
-uOttawa,1,uOttawa station,45.42072,-75.68259
-Hurdman,1,Hurdman,45.41228,-75.66476
-Blair,1,Blair station|Blair,45.43108,-75.60837
-Billings Bridge,,Billings Bridge,45.38457,-75.67682
-Baseline,,Baseline station,45.34782,-75.76107
+stop_name,route_id,aliases,lat,lon,lines
+Airport,4,Airport station|Airport O-Train|Aéroport station|station Aéroport|Aeroport station|station Aeroport,45.32340,-75.66817,4
+Barrhaven Centre,,Barrhaven Centre station|Barrhaven Centre,45.26690,-75.74155,
+Baseline,,Baseline station,45.34728,-75.76171,
+Bayshore,,Bayshore station,45.34570,-75.81081,
+Bayview,,Bayview|Bayview station|Bayview O-Train,45.40888,-75.72226,1 2
+Beatrice,,Beatrice station,45.27162,-75.72586,
+Billings Bridge,,Billings Bridge|Billings Bridge station,45.38481,-75.67681,
+Blair,1,Blair station|Blair|Blair O-Train,45.43137,-75.60845,1
+Bowesville,2,Bowesville station|Bowesville O-Train,45.29367,-75.63249,2
+Carleton,2,Carleton station|Carleton O-Train,45.38524,-75.69567,2
+Chapel Hill,,Chapel Hill station,45.43332,-75.52322,
+Corso Italia,2,Corso Italia station|Corso Italia O-Train|Corso Italia,45.40441,-75.71314,2
+Cyrville,1,Cyrville station|Cyrville O-Train|Cyrville,45.42330,-75.62907,1
+Dominion,,Dominion station,45.39222,-75.76053,
+Dow's Lake,2,Dow's Lake station|Dow's Lake O-Train|Dows Lake station|Dows Lake O-Train|Lac Dow station|station Lac Dow,45.39753,-75.70883,2
+Eagleson,,Eagleson station,45.31856,-75.88411,
+Elmvale,,Elmvale station,45.39956,-75.62341,
+Fallowfield,,Fallowfield station,45.29881,-75.73599,
+Greenboro,2,Greenboro station|Greenboro O-Train,45.35991,-75.65867,2
+Heron,,Heron station,45.37898,-75.68009,
+Hurdman,1,Hurdman|Hurdman station|Hurdman O-Train,45.41211,-75.66621,1
+Innovation,,Innovation station,45.34296,-75.93196,
+Iris,,Iris station,45.35571,-75.77036,
+Jeanne d'Arc,,Jeanne d'Arc station|Jeanne dArc station,45.46899,-75.54615,
+Lansdowne,,Lansdowne station,45.39908,-75.68613,
+Lees,1,Lees station|Lees O-Train,45.41618,-75.66981,1
+Leitrim,2,Leitrim station|Leitrim O-Train,45.31457,-75.63117,2
+Limebank,2,Limebank station|Limebank O-Train,45.27741,-75.66681,2
+Lincoln Fields,,Lincoln Fields station|Lincoln Fields,45.36651,-75.78278,
+Longfields,,Longfields station,45.28532,-75.74690,
+Lycée Claudel,,Lycée Claudel station|Lycee Claudel station,45.40662,-75.66435,
+Lyon,1,Lyon station|Lyon|Lyon O-Train,45.41849,-75.70483,1
+Mackenzie King,,Mackenzie King station|Mackenzie King,45.42409,-75.68981,
+Marketplace,,Marketplace station,45.26962,-75.74283,
+Millennium,,Millennium station,45.46532,-75.44823,
+Moodie,,Moodie station,45.33960,-75.84147,
+Mooney's Bay,2,Mooney's Bay station|Mooney's Bay O-Train|Mooneys Bay station|Mooneys Bay O-Train,45.37747,-75.68449,2
+Nepean Woods,,Nepean Woods station,45.27443,-75.71716,
+Orléans Park & Ride,,Orléans Park & Ride station|Orleans Park & Ride station|Parc-O-Bus Orléans station|station Parc-O-Bus Orléans|Parc-O-Bus Orleans station|station Parc-O-Bus Orleans|Parc O Bus Orléans station|station Parc O Bus Orléans|Parc O Bus Orleans station|station Parc O Bus Orleans,45.48021,-75.51978,
+Parliament,1,Parliament station|Parliament O-Train|Parlement station|station Parlement,45.42134,-75.69899,1
+Pimisi,1,Pimisi station|Pimisi O-Train|Pimisi,45.41331,-75.71294,1
+Pinecrest,,Pinecrest station,45.35119,-75.79072,
+Place d'Orléans,,Place d'Orléans station|Place d'Orleans station|Place dOrléans station|Place dOrleans station|Place d'Orléans|Place d'Orleans|Place dOrléans|Place dOrleans,45.47843,-75.51932,
+Pleasant Park,,Pleasant Park station,45.39279,-75.66936,
+Queensway,,Queensway station,45.35915,-75.77212,
+Rideau,1,Rideau station|Rideau Centre|Rideau O-Train,45.42626,-75.69159,1
+Riverside,,Riverside station,45.39674,-75.66936,
+Riverview,,Riverview station,45.26860,-75.69497,
+Smyth,,Smyth station,45.40117,-75.66670,
+South Keys,,South Keys station|South Keys O-Train,45.35371,-75.65532,2 4
+St-Laurent,1,St-Laurent station|St-Laurent O-Train|St Laurent station|St Laurent O-Train|St. Laurent station|St. Laurent O-Train|Saint-Laurent station|Saint-Laurent O-Train|Saint Laurent station|Saint Laurent O-Train,45.42062,-75.63803,1
+Strandherd,,Strandherd station,45.27364,-75.74573,
+Teron,,Teron station,45.32254,-75.88931,
+Terry Fox,,Terry Fox station,45.30960,-75.90662,
+Tremblay,1,Tremblay station|Tremblay O-Train,45.41839,-75.65197,1
+Trim,,Trim station,45.49492,-75.48001,
+Tunney's Pasture,1,Tunney's Pasture|Tunney's|Tunneys|Tunney's Pasture station|Tunney's Pasture O-Train|Tunneys Pasture station|Tunneys Pasture O-Train|Tunneys Pasture,45.40361,-75.73676,1
+uOttawa,1,uOttawa station|uOttawa O-Train,45.42181,-75.67997,1
+Uplands,4,Uplands station|Uplands O-Train,45.33278,-75.65552,4
+Walkley,2,Walkley station|Walkley O-Train,45.36885,-75.66695,2
+Westboro,,Westboro station,45.39578,-75.75311,

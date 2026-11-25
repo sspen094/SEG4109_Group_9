@@ -73,7 +73,7 @@
         <thead><tr><th scope="col">Stop</th><th scope="col">Line</th><th scope="col" class="num">Negative</th><th scope="col" class="num">All items</th></tr></thead>
         <tbody>
         {% for s in data.stops|sort(attribute='negative', reverse=true) %}
-          <tr><td><a href="{{ url_for('feedback', stop=s.stop) }}">{{ s.stop }}</a></td><td>{{ s.route|route_name }}</td><td class="num">{{ s.negative }}</td><td class="num">{{ s.total }}</td></tr>
+          <tr><td><a href="{{ url_for('feedback', stop=s.stop) }}">{{ s.stop }}</a></td><td>{{ s.lines|map('route_name')|join(', ') or 'Bus only' }}</td><td class="num">{{ s.negative }}</td><td class="num">{{ s.total }}</td></tr>
         {% endfor %}
         </tbody>
       </table></div>

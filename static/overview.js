@@ -236,9 +236,10 @@
     const max = Math.max(1, ...data.stops.map((s) => s.negative));
     const filters = new URLSearchParams(window.location.search);
     data.stops.forEach((stop) => {
-      const radius = stop.negative ? 6 + 12 * Math.sqrt(stop.negative / max) : 5;
+      // Stations without feedback stay small and faint so hotspots stand out.
+      const radius = stop.negative ? 6 + 12 * Math.sqrt(stop.negative / max) : stop.total ? 5 : 4;
       const marker = L.circleMarker([stop.lat, stop.lon], {
-        radius, weight: 2, fillOpacity: 0.9, ...markerStyle(stop),
+        radius, weight: 2, fillOpacity: stop.total ? 0.9 : 0.55, ...markerStyle(stop),
       });
       marker.bindTooltip(tooltipFor(stop), { direction: "top", offset: [0, -radius] });
       marker.on("click", () => {
@@ -249,8 +250,11 @@
       marker.addTo(map);
       markers.push({ marker, stop });
     });
-    if (data.stops.length) {
-      map.fitBounds(data.stops.map((s) => [s.lat, s.lon]), { padding: [30, 30] });
+    // Zoom to the stations that have feedback; show the whole network otherwise.
+    const withFeedback = data.stops.filter((s) => s.total > 0);
+    const focus = withFeedback.length >= 2 ? withFeedback : data.stops;
+    if (focus.length) {
+      map.fitBounds(focus.map((s) => [s.lat, s.lon]), { padding: [30, 30] });
     } else {
       map.setView([45.4215, -75.6972], 12);
     }
