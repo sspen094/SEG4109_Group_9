@@ -1,7 +1,10 @@
 # Ingestion
 
-Small provider adapters turn Reddit posts and place reviews into one record shape,
-tag location-specific records, and append new records to a deduplicated JSONL file.
+Small provider adapters turn Reddit posts, App Store reviews and place reviews into
+one record shape, tag location-specific records, and append new records to a
+deduplicated JSONL file. The Python dashboard pipeline (`trfd/collectors.py`) reads
+that file, and the nightly scheduler (`python -m trfd.scheduler`) runs this package
+before each pipeline cycle. Reviewer names are not stored (TR9).
 
 ## Configure
 
@@ -19,6 +22,12 @@ credential are run:
 - `REDDIT_DEVVIT_ENDPOINT` and `REDDIT_DEVVIT_TOKEN`
 - `YELP_API_KEY`
 - `GOOGLE_MAPS_API_KEY`
+
+App Store reviews need no credential. A location with an `appStore` block
+(`appId`, `country`, `pages` up to 10) is collected from Apple's public customer
+reviews RSS feed. OC Transpo has no official iOS app, so the example uses the
+most-reviewed Ottawa transit app, "Ottawa Transit (OC Transpo)" (third party,
+id 1436639405). Replace it if the group picks a different app.
 
 Values already set in your terminal take precedence over `.env` values.
 

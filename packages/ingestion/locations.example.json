@@ -10,5 +10,10 @@
     },
     "yelpBusinessId": "replace-with-yelp-business-id",
     "googlePlaceId": "replace-with-google-place-id"
+  },
+  {
+    "id": "ottawa-transit-app",
+    "name": "Ottawa Transit (OC Transpo) iOS app",
+    "appStore": { "appId": "1436639405", "country": "ca", "pages": 2 }
   }
 ]

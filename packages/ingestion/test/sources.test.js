@@ -1,7 +1,46 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { AppStoreSource } from "../src/sources/app-store.js";
 import { DevvitRedditSource } from "../src/sources/devvit-reddit.js";
 import { YelpSource } from "../src/sources/yelp.js";
+
+test("collects App Store reviews from the public RSS feed without reviewer names", async () => {
+  const urls = [];
+  const source = new AppStoreSource({
+    request: async (url) => {
+      urls.push(url);
+      if (url.includes("/page=2/")) return { feed: {} };
+      return {
+        feed: {
+          entry: [
+            { "im:name": { label: "App metadata entry" } },
+            {
+              id: { label: "14704526375" },
+              author: { name: { label: "SomeRider" } },
+              title: { label: "Travel planner" },
+              content: { label: "No delay alerts in the app" },
+              "im:rating": { label: "1" },
+              updated: { label: "2026-10-24T01:23:36-07:00" },
+            },
+          ],
+        },
+      };
+    },
+  });
+
+  const location = { appStore: { appId: "1436639405", country: "ca", pages: 3 } };
+  assert.equal(source.supports(location), true);
+  assert.equal(source.supports({ appStore: { appId: "replace-me" } }), false);
+
+  const reviews = await source.fetchReviews(location);
+  assert.equal(urls.length, 2); // stops at the first empty page
+  assert.match(urls[0], /itunes\.apple\.com\/ca\/rss\/customerreviews\/page=1\/id=1436639405\//);
+  assert.equal(reviews.length, 1);
+  assert.equal(reviews[0].externalId, "14704526375");
+  assert.equal(reviews[0].rating, 1);
+  assert.equal(reviews[0].author, null);
+  assert.equal(reviews[0].publishedAt, "2026-10-24T08:23:36.000Z");
+});
 
 test("collects Reddit posts through the Devvit bridge", async () => {
   let receivedOptions;
