@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Sign in{% endblock %}
+{% block content %}
+<div class="login">
+  <div class="card">
+    <h1>Sign in</h1>
+    <p class="muted">Access depends on your role: executives read, customer experience staff also correct tags, administrators also manage settings.</p>
+    <form method="post">
+      <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+      <label class="field">Username
+        <input type="text" name="username" autocomplete="username" required autofocus>
+      </label>
+      <label class="field">Password
+        <input type="password" name="password" autocomplete="current-password" required>
+      </label>
+      <button type="submit">Sign in</button>
+    </form>
+  </div>
+  {% if demo %}
+  <p class="muted small" style="margin-top:12px">Demo accounts: <strong>executive</strong>, <strong>staff</strong> and <strong>admin</strong>, all with password <code>{{ demo_password }}</code>. Set <code>TRFD_DEMO_PASSWORD</code> to change it.</p>
+  {% endif %}
+</div>
+{% endblock %}

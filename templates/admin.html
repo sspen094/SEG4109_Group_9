@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}Admin{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Administration</h1>
+  <p class="muted">Data sources, alert thresholds, user accounts and the collection run log (TR6).</p>
+</div>
+
+<div class="grid">
+  <section class="card span-6" aria-labelledby="settings-title">
+    <div class="card-head"><h2 id="settings-title">Sources and alerts</h2><p>Sources without API access fall back to the anonymized sample dataset (scope exclusion 10).</p></div>
+    <form method="post" action="{{ url_for('admin_settings') }}">
+      <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+      <fieldset style="border:0;padding:0;margin:0 0 16px">
+        <legend class="small muted" style="margin-bottom:6px">Data sources</legend>
+        <div class="checks">
+          {% for s in sources %}
+          <label><input type="checkbox" name="source_{{ s.source }}" value="1" {% if s.enabled %}checked{% endif %}>
+            {{ s.label }} <span class="muted small">({% if s.mode == 'live' %}live, {{ s.records }} items in the last cycle{% elif s.mode == 'sample' %}sample dataset{% else %}{{ s.mode }}{% endif %})</span></label>
+          {% endfor %}
+        </div>
+      </fieldset>
+      <div class="form-grid">
+        <label class="field">Alert threshold (negative items per route)
+          <input type="number" name="alert_threshold" min="1" value="{{ alert_threshold }}" required>
+        </label>
+        <label class="field">Alert window in days (0 = all)
+          <input type="number" name="alert_window_days" min="0" max="365" value="{{ alert_window }}" required>
+        </label>
+      </div>
+      <button type="submit">Save settings</button>
+    </form>
+  </section>
+
+  <section class="card span-6" aria-labelledby="run-title">
+    <div class="card-head"><h2 id="run-title">Collection</h2>
+      <p>Nightly cycle at {{ run_at }} local time: {% if scheduler_on %}the scheduler is running in this app.{% else %}not scheduled in this process. Start the app with <code>TRFD_SCHEDULER=1</code>, or schedule <code>python -m trfd.scheduler --once</code>.{% endif %}</p>
+    </div>
+    <p><strong>{{ streak }}</strong> consecutive night{{ '' if streak == 1 else 's' }} with an on-time unattended cycle (acceptance criterion 1 needs 5; TR8 needs each to finish before 06:00).</p>
+    <form method="post" action="{{ url_for('admin_run') }}">
+      <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+      <div class="checks" style="margin-bottom:12px">
+        <label><input type="checkbox" name="ingest" value="1" checked> Also run the Node ingestion package first (fetches new public feedback from sources with access)</label>
+      </div>
+      <button type="submit">Run collection now</button>
+    </form>
+  </section>
+
+  <section class="card span-12" aria-labelledby="users-title">
+    <div class="card-head"><h2 id="users-title">Users</h2><p>Executives read; staff also correct tags; administrators also manage this page.</p></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th scope="col">Username</th><th scope="col">Role</th><th scope="col"><span class="sr-only">Action</span></th></tr></thead>
+      <tbody>
+      {% for u in users %}
+        <tr><td>{{ u.username }}</td><td>{{ u.role|capitalize }}</td><td>
+          {% if u.id != user.id %}
+          <form class="inline-form" method="post" action="{{ url_for('admin_delete_user', user_id=u.id) }}">
+            <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+            <button type="submit" class="danger" aria-label="Delete user {{ u.username }}">Delete</button>
+          </form>
+          {% else %}<span class="muted small">You</span>{% endif %}
+        </td></tr>
+      {% endfor %}
+      </tbody>
+    </table></div>
+    <form method="post" action="{{ url_for('admin_add_user') }}" class="filters" style="margin-top:16px">
+      <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+      <label>Username <input type="text" name="username" required autocomplete="off"></label>
+      <label>Password <input type="password" name="password" required autocomplete="new-password"></label>
+      <label>Role
+        <select name="role">{% for r in options.roles %}<option value="{{ r }}">{{ r|capitalize }}</option>{% endfor %}</select>
+      </label>
+      <button type="submit">Add user</button>
+    </form>
+  </section>
+
+  <section class="card span-12" aria-labelledby="log-title">
+    <div class="card-head"><h2 id="log-title">Run log</h2><p>The latest collection cycles. Times are local.</p></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th scope="col">Started</th><th scope="col">Trigger</th><th scope="col">Status</th><th scope="col">Finished</th><th scope="col" class="num">New items</th><th scope="col" class="num">Alerts</th><th scope="col">Details</th></tr></thead>
+      <tbody>
+      {% for r in runs %}
+        <tr>
+          <td>{{ r.started_at|replace('T', ' ') }}</td>
+          <td>{{ r.kind|capitalize }}</td>
+          <td>{{ r.status|capitalize }}{% if r.kind == 'nightly' and r.status == 'ok' and not on_time(r) %} (after 06:00){% endif %}</td>
+          <td>{{ (r.finished_at or '')|replace('T', ' ') }}</td>
+          <td class="num">{{ r.stored if r.stored is not none else '' }}</td>
+          <td class="num">{{ r.alerts if r.alerts is not none else '' }}</td>
+          <td class="small">{{ r.message or '' }}</td>
+        </tr>
+      {% else %}
+        <tr><td colspan="7" class="muted">No collection cycles yet.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table></div>
+  </section>
+</div>
+{% endblock %}

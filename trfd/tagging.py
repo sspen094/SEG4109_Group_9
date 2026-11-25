@@ -39,6 +39,9 @@ def _read_csv(name):
 ROUTES = _read_csv("routes.csv")
 STOPS = _read_csv("stops.csv")
 ROUTE_IDS = {r["route_id"] for r in ROUTES}
+ROUTE_NAMES = {r["route_id"]: r["name"] for r in ROUTES}
+STOP_NAMES = [s["stop_name"] for s in STOPS]
+CATEGORIES = tuple(ISSUE_KEYWORDS) + ("other",)
 
 
 def _alias_pattern(aliases):
@@ -76,11 +79,15 @@ def classify_issue(text):
     return best if counts[best] else "other"
 
 
-def tag(text):
-    stop = resolve_stop(text)
+def tag(text, hint=None, source=None):
+    """hint: the location a collector searched for (for example the station a
+    Reddit query or place review belongs to), used when the text names none."""
+    stop = resolve_stop(text) or (resolve_stop(hint) if hint else None)
     # No route named: fall back to the line serving the station, if any.
     route = resolve_route(text) or STOP_ROUTE.get(stop)
     category = classify_issue(text)
+    if category == "other" and source == "app_store":
+        category = "app_quality"  # an app review with no other issue is about the app
     return {
         "route": route,
         "stop": stop,

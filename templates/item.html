@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Item {{ item.id }}{% endblock %}
+{% block content %}
+<p><a href="{{ back }}">Back to the list</a></p>
+<div class="grid">
+  <section class="card span-8" aria-labelledby="item-title">
+    <div class="card-head"><h1 id="item-title">Feedback item {{ item.id }}</h1></div>
+    <blockquote>{{ item.text }}</blockquote>
+    <dl class="meta">
+      <dt>Source</dt><dd>{{ item.source|label }}{% if item.origin == 'sample' %} (anonymized sample dataset){% else %} (live data){% endif %}</dd>
+      <dt>Posted</dt><dd>{{ item.posted_at|replace('T', ' ') }}</dd>
+      <dt>Sentiment</dt><dd><span class="dot {{ item.sentiment }}" aria-hidden="true"></span>{{ item.sentiment|capitalize }} (confidence {{ '%.2f'|format(item.confidence) }})</dd>
+      <dt>Route</dt><dd>{{ item.route|route_name or 'None' }}</dd>
+      <dt>Stop</dt><dd>{{ item.stop or 'None' }}</dd>
+      <dt>Issue category</dt><dd>{{ item.category|label }}</dd>
+      <dt>Manual queue</dt><dd>{{ 'Waiting for review' if item.needs_review else 'Not queued' }}</dd>
+    </dl>
+  </section>
+
+  <section class="card span-4" aria-labelledby="edit-title">
+    <div class="card-head"><h2 id="edit-title">Correct this item</h2></div>
+    {% if can_edit %}
+    <form method="post">
+      <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+      <input type="hidden" name="next" value="{{ back }}">
+      <div class="form-grid" style="grid-template-columns: 1fr">
+        <label class="field">Sentiment
+          <select name="sentiment">{% for s in options.sentiments %}<option value="{{ s }}" {% if item.sentiment == s %}selected{% endif %}>{{ s|capitalize }}</option>{% endfor %}</select>
+        </label>
+        <label class="field">Route
+          <select name="route"><option value="">None</option>{% for value, text in options.routes %}<option value="{{ value }}" {% if item.route == value %}selected{% endif %}>{{ text }}</option>{% endfor %}</select>
+        </label>
+        <label class="field">Stop
+          <select name="stop"><option value="">None</option>{% for s in options.stops %}<option value="{{ s }}" {% if item.stop == s %}selected{% endif %}>{{ s }}</option>{% endfor %}</select>
+        </label>
+        <label class="field">Issue category
+          <select name="category">{% for c in options.categories %}<option value="{{ c }}" {% if item.category == c %}selected{% endif %}>{{ c|label }}</option>{% endfor %}</select>
+        </label>
+      </div>
+      <p class="muted small">Saving marks the item as reviewed. The old values are kept in the override log for retraining (TR5).</p>
+      <button type="submit">Save</button>
+    </form>
+    {% else %}
+    <p class="muted">Executives have read-only access. Customer experience staff and administrators can correct sentiment and tags.</p>
+    {% endif %}
+  </section>
+
+  <section class="card span-12" aria-labelledby="history-title">
+    <div class="card-head"><h2 id="history-title">Override history</h2></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th scope="col">When (UTC)</th><th scope="col">By</th><th scope="col">Field</th><th scope="col">Old value</th><th scope="col">New value</th></tr></thead>
+      <tbody>
+      {% for h in history %}
+        <tr><td>{{ h.changed_at }}</td><td>{{ h.changed_by or '' }}</td><td>{{ h.field|label }}</td><td>{{ h.old_value if h.old_value is not none else 'None' }}</td><td>{{ h.new_value if h.new_value is not none else 'None' }}</td></tr>
+      {% else %}
+        <tr><td colspan="5" class="muted">No staff changes yet.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table></div>
+  </section>
+</div>
+{% endblock %}

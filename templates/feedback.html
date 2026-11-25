@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Manual tagging queue' if filters.needs_review else 'Feedback' }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  {% if filters.needs_review %}
+  <h1>Manual tagging queue</h1>
+  <p class="muted">Items whose route or stop could not be resolved with confidence wait here for staff instead of being guessed (TR4). Saving an item marks it as reviewed.</p>
+  {% else %}
+  <h1>Feedback</h1>
+  <p class="muted">Every stored item after de-duplication, relevance filtering and personal data removal.{% if can_edit %} Select an item to correct its sentiment or tags (TR5).{% endif %}</p>
+  {% endif %}
+</div>
+
+<form class="filters" method="get" aria-label="Filter feedback">
+  <label>Search text
+    <input type="search" name="q" value="{{ filters.q }}" placeholder="e.g. elevator">
+  </label>
+  <label>Date range
+    <select name="days">{% for value, text in options.date_ranges %}<option value="{{ value }}" {% if filters.days == value %}selected{% endif %}>{{ text }}</option>{% endfor %}</select>
+  </label>
+  <label>Source
+    <select name="source"><option value="">All</option>{% for value, text in options.sources %}<option value="{{ value }}" {% if filters.source == value %}selected{% endif %}>{{ text }}</option>{% endfor %}</select>
+  </label>
+  <label>Sentiment
+    <select name="sentiment"><option value="">All</option>{% for s in options.sentiments %}<option value="{{ s }}" {% if filters.sentiment == s %}selected{% endif %}>{{ s|capitalize }}</option>{% endfor %}</select>
+  </label>
+  <label>Route
+    <select name="route"><option value="">All</option>{% for value, text in options.routes %}<option value="{{ value }}" {% if filters.route == value %}selected{% endif %}>{{ text }}</option>{% endfor %}</select>
+  </label>
+  <label>Stop
+    <select name="stop"><option value="">All</option>{% for s in options.stops %}<option value="{{ s }}" {% if filters.stop == s %}selected{% endif %}>{{ s }}</option>{% endfor %}</select>
+  </label>
+  <label>Issue category
+    <select name="category"><option value="">All</option>{% for c in options.categories %}<option value="{{ c }}" {% if filters.category == c %}selected{% endif %}>{{ c|label }}</option>{% endfor %}</select>
+  </label>
+  <label>Queue
+    <select name="needs_review"><option value="">All items</option><option value="1" {% if filters.needs_review %}selected{% endif %}>Manual tagging only</option></select>
+  </label>
+  <button type="submit">Apply</button>
+  {% if filters.values()|select|list %}<a class="button secondary" href="{{ url_for('feedback') }}">Reset</a>{% endif %}
+</form>
+
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <caption>{% if total > rows|length %}Showing the {{ rows|length }} most recent of {{ "{:,}".format(total) }} items. Narrow the filters to see others.{% else %}{{ total }} item{{ '' if total == 1 else 's' }}{% endif %}</caption>
+      <thead><tr>
+        <th scope="col">Date</th><th scope="col">Source</th><th scope="col">Feedback</th><th scope="col">Sentiment</th>
+        <th scope="col">Route</th><th scope="col">Stop</th><th scope="col">Issue</th><th scope="col"><span class="sr-only">Action</span></th>
+      </tr></thead>
+      <tbody>
+      {% for f in rows %}
+        <tr>
+          <td class="nowrap">{{ f.posted_at[:10] }}</td>
+          <td>{{ f.source|label }}{% if f.origin == 'sample' %} <span class="muted small">(sample)</span>{% endif %}</td>
+          <td class="text"><div class="clamp">{{ f.text }}</div></td>
+          <td><span class="dot {{ f.sentiment }}" aria-hidden="true"></span>{{ f.sentiment|capitalize }} <span class="muted small">{{ '%.2f'|format(f.confidence) }}</span></td>
+          <td>{% if f.route %}{{ f.route|route_name }}{% else %}<span class="tag-missing">{{ 'needs review' if f.needs_review else 'none' }}</span>{% endif %}</td>
+          <td>{{ f.stop or '' }}</td>
+          <td>{{ f.category|label }}</td>
+          <td><a href="{{ url_for('feedback_item', feedback_id=f.id, next=here) }}" aria-label="{{ 'Retag' if can_edit else 'View' }} item {{ f.id }}">{{ 'Retag' if can_edit else 'View' }}</a></td>
+        </tr>
+      {% else %}
+        <tr><td colspan="8" class="muted">{{ 'The manual tagging queue is empty.' if filters.needs_review else 'No feedback matches these filters.' }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
