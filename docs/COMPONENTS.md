@@ -14,17 +14,18 @@ Transit Rider Feedback Dashboard (TRFD), SEG4105 Group 9. The dashboard and proc
 | Processing pipeline | /trfd/pipeline.py | Normalizes records, removes cross-source duplicates, filters off-topic Reddit posts, scrubs usernames, emails and phone numbers, scores, tags, stores new items and logs each run | sentiment, tagging, store, alerts modules; Python re |
 | Nightly scheduler | /trfd/scheduler.py | Runs the ingestion package and then the pipeline every night (default 02:00), retries with back-off, records each run | subprocess (Node.js), threading |
 | Sentiment engine | /trfd/sentiment.py | Labels each item negative, neutral or positive with a confidence score; handles negation and sarcasm cues | Python standard library (lexicon baseline) |
-| Tagging module | /trfd/tagging.py | Resolves route and stop from free text (including colloquial names) or the collector's location hint; assigns issue category; flags unresolved items for manual tagging | GTFS reference data in /data/routes.csv and /data/stops.csv (with stop coordinates) |
+| Tagging module | /trfd/tagging.py | Resolves route and station from free text (including colloquial names, and ignoring numbers that are times or quantities) or the collector's location hint; assigns issue category; flags unresolved items for manual tagging | Route and station lists in /data/routes.csv and /data/stops.csv |
+| GTFS loader | /trfd/gtfs.py | Builds the route and station lists from OC Transpo's GTFS Schedule feed: all 178 routes (bus routes and O-Train Lines 1, 2 and 4) and 61 stations with coordinates and the train line serving each; keeps hand-written aliases. The next pipeline cycle re-tags stored items when the lists change | OC Transpo GTFS Schedule feed (public, no key) |
 | Data access / storage | /trfd/store.py | SQLite schema and migration, incremental inserts by text fingerprint, filtered queries, aggregates for tiles, charts and map, override log, settings, users, run log | sqlite3 (standard library) |
 | Alerting | /trfd/alerts.py | Raises an alert when negative volume for a route reaches the threshold within the alert window (both set on the Admin page) | store (SQLite) |
-| Reference and sample data | /data/ | Synthetic feedback records and the demo subset of GTFS routes and stops | None |
+| Reference and sample data | /data/ | Synthetic feedback records (used for sources without live data) and the route and station lists from the GTFS feed | None |
 | Tests | /tests/test_trfd.py, /packages/ingestion/test/ | Python unit and integration tests (pipeline, bridge, roles, forms, load time); Node tests for the adapters and store | pytest, pytest-cov, node:test |
 | Container build | /Dockerfile, /.dockerignore | Builds the runnable image (Python app plus the Node.js binary for ingestion, nightly scheduler on) | python:3.12-slim and node:22-slim base images |
 
 ## 2. External Interfaces & APIs
 - Input Interfaces:
   - Source connectors (ingestion package): Reddit through the Devvit endpoint, Apple's public App Store customer reviews RSS feed, Google Places API (place references only), Yelp Fusion API (outside the scope statement, not loaded by the pipeline).
-  - GTFS reference data (routes and stops) loaded from `/data`.
+  - GTFS reference data (routes and stations) loaded from `/data`; `python -m trfd.gtfs` rebuilds it from OC Transpo's public GTFS Schedule feed.
   - CLI: `python -m trfd.pipeline` runs one pipeline cycle; `python -m trfd.scheduler --once` runs ingestion and then the pipeline; `python -m trfd.scheduler` runs it every night.
   - REST: `POST /api/feedback/<id>/override` (staff or admin) with a JSON body such as `{"route": "97", "category": "delays"}`.
   - Query strings on `/`, `/feedback` and `/api/feedback`: `source`, `sentiment`, `route`, `stop`, `category`, `needs_review=1`, `q` (text search), `days` (date range).

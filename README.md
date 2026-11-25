@@ -14,13 +14,13 @@ work is in package folders and feeds the pipeline:
 
 ## Run the dashboard
 
-Needs Python 3.12 or newer. From the repository root in PowerShell:
+Needs Python 3.12 or newer. From the repository root (PowerShell or Command
+Prompt; on macOS or Linux use `.venv/bin/python`):
 
 ```powershell
 python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-python app.py
+.venv\Scripts\python -m pip install -r requirements.txt
+.venv\Scripts\python app.py
 ```
 
 Open <http://localhost:5000> and sign in with a demo account: `executive`
@@ -38,7 +38,7 @@ Needs Node.js 20.12 or newer. The App Store feed needs no credentials; Reddit,
 Yelp and Google need the keys described in the ingestion README.
 
 ```powershell
-python -m trfd.scheduler --once
+.venv\Scripts\python -m trfd.scheduler --once
 ```
 
 This runs the Node ingestion package with `packages/ingestion/locations.json`
@@ -56,6 +56,26 @@ docker run --rm -p 8080:5000 -v trfd-state:/app/state trfd-dashboard
 
 The image includes Node.js and runs the nightly cycle at 02:00 Ottawa time.
 The `trfd-state` volume keeps the database and collected feedback.
+
+## Route and station data
+
+`data/routes.csv` and `data/stops.csv` list every OC Transpo route (all bus
+routes and O-Train Lines 1, 2 and 4) and all stations with their coordinates.
+They are built from OC Transpo's public GTFS Schedule feed, which OC Transpo
+replaces about once a month. To refresh them:
+
+```powershell
+python -m trfd.gtfs
+```
+
+Nicknames already in the `aliases` column (such as "Tunney's") are kept. The
+next collection cycle re-tags stored feedback, except items staff have
+corrected. Street-corner bus stops are not loaded; feedback about them is
+tagged by route.
+
+Route and station data: OC Transpo GTFS Schedule feed
+(<https://www.octranspo.com/en/plan-your-trip/travel-tools/developers>), used
+under OC Transpo's developer terms.
 
 ## Settings
 
@@ -75,7 +95,8 @@ The `trfd-state` volume keeps the database and collected feedback.
 ## Tests
 
 ```powershell
-python -m pytest
+.venv\Scripts\python -m pip install -r requirements-dev.txt
+.venv\Scripts\python -m pytest
 npm test
 ```
 
