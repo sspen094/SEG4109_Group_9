@@ -34,7 +34,8 @@ test("collects App Store reviews from the public RSS feed without reviewer names
 
   const reviews = await source.fetchReviews(location);
   assert.equal(urls.length, 2); // stops at the first empty page
-  assert.match(urls[0], /itunes\.apple\.com\/ca\/rss\/customerreviews\/page=1\/id=1436639405\//);
+  assert.match(urls[0], /itunes\.apple\.com\/ca\/rss\/customerreviews\/id=1436639405\//);
+  assert.match(urls[1], /\/customerreviews\/page=2\/id=1436639405\//);
   assert.equal(reviews.length, 1);
   assert.equal(reviews[0].externalId, "14704526375");
   assert.equal(reviews[0].rating, 1);

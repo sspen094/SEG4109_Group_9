@@ -20,9 +20,12 @@ export class AppStoreSource {
     const reviews = [];
 
     for (let page = 1; page <= pageCount; page += 1) {
+      // Apple's JSON feed has returned no entries for "/page=1/" URLs while the
+      // same URL without a page number works, so page 1 omits it.
+      const pagePart = page === 1 ? "" : `/page=${page}`;
       const result = await this.request(
         `https://itunes.apple.com/${encodeURIComponent(country)}/rss/customerreviews`
-          + `/page=${page}/id=${encodeURIComponent(appId)}/sortby=mostrecent/json`,
+          + `${pagePart}/id=${encodeURIComponent(appId)}/sortby=mostrecent/json`,
       );
       // A feed with one entry returns an object instead of an array, and older
       // feeds put the app's own metadata first, without a rating.
