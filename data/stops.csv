@@ -1,11 +1,11 @@
-stop_name,route_id,aliases
-Tunney's Pasture,1,Tunney's Pasture|Tunney's|Tunneys
-Bayview,1,Bayview
-Lyon,1,Lyon station|Lyon
-Parliament,1,Parliament station
-Rideau,1,Rideau station|Rideau Centre
-uOttawa,1,uOttawa station
-Hurdman,1,Hurdman
-Blair,1,Blair station|Blair
-Billings Bridge,,Billings Bridge
-Baseline,,Baseline station
+stop_name,route_id,aliases,lat,lon
+Tunney's Pasture,1,Tunney's Pasture|Tunney's|Tunneys,45.40343,-75.73527
+Bayview,1,Bayview,45.40935,-75.72222
+Lyon,1,Lyon station|Lyon,45.41888,-75.70406
+Parliament,1,Parliament station,45.42143,-75.69814
+Rideau,1,Rideau station|Rideau Centre,45.42634,-75.69193
+uOttawa,1,uOttawa station,45.42072,-75.68259
+Hurdman,1,Hurdman,45.41228,-75.66476
+Blair,1,Blair station|Blair,45.43108,-75.60837
+Billings Bridge,,Billings Bridge,45.38457,-75.67682
+Baseline,,Baseline station,45.34782,-75.76107

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Dashboard{% endblock %} | TRFD</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+{% block head %}{% endblock %}
+</head>
+<body>
+<a class="skip" href="#main">Skip to main content</a>
+<header class="top">
+  <div class="top-inner">
+    <a class="brand" href="{{ url_for('overview') }}"><span class="brand-mark" aria-hidden="true">TR</span>Transit Rider Feedback Dashboard</a>
+    {% if user %}
+    {% set here = request.endpoint %}
+    <nav aria-label="Main">
+      <ul>
+        <li><a href="{{ url_for('overview') }}" {% if here == 'overview' %}aria-current="page"{% endif %}>Overview</a></li>
+        <li><a href="{{ url_for('feedback') }}" {% if here == 'feedback' and not request.args.get('needs_review') %}aria-current="page"{% endif %}>Feedback</a></li>
+        <li><a href="{{ url_for('feedback', needs_review=1) }}" {% if here == 'feedback' and request.args.get('needs_review') %}aria-current="page"{% endif %}>Manual queue <span class="pill" aria-label="{{ queue_count }} items">{{ queue_count }}</span></a></li>
+        {% if is_admin %}<li><a href="{{ url_for('admin') }}" {% if here == 'admin' %}aria-current="page"{% endif %}>Admin</a></li>{% endif %}
+      </ul>
+    </nav>
+    <div class="who">
+      <span>{{ user.username }} <span class="pill">{{ user.role }}</span></span>
+      <form method="post" action="{{ url_for('logout') }}">
+        <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+        <button type="submit" class="link">Sign out</button>
+      </form>
+    </div>
+    {% endif %}
+  </div>
+</header>
+<main id="main">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% for category, message in messages %}
+  <p class="flash {{ category }}" role="{{ 'alert' if category == 'error' else 'status' }}">{{ message }}</p>
+  {% endfor %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</main>
+<footer>SEG4105 Group 9 prototype. Usernames, handles and contact details are removed before storage (TR9). Sources without API access are shown on an anonymized sample dataset.</footer>
+{% block scripts %}{% endblock %}
+</body>
+</html>

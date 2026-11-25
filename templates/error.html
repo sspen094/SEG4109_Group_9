@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}{{ error.code }}{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>{{ 'Not found' if error.code == 404 else 'Not allowed' }}</h1>
+  <p>{{ error.description }}</p>
+  <p><a href="{{ url_for('overview') }}">Back to the overview</a></p>
+</div>
+{% endblock %}

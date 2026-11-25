@@ -20,7 +20,7 @@ function toStoredRecord(review, location, collectedAt) {
     title: review.title,
     text: review.text,
     rating: review.rating,
-    author: review.author,
+    // Reviewer names are never stored (TR9); author only feeds the fallback ID hash.
     publishedAt: review.publishedAt,
     sourceUrl: review.sourceUrl,
     collectedAt,

@@ -35,6 +35,7 @@ test("normalizes, tags, and stores reviews", async () => {
   assert.equal(summary.stored, 1);
   assert.equal(written[0].id, "reddit:abc");
   assert.equal(written[0].locationSpecific, true);
+  assert.equal("author" in written[0], false); // TR9: reviewer names are not stored
 });
 
 test("continues when one source fails", async () => {

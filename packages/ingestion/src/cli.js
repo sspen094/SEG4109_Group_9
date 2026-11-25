@@ -4,6 +4,7 @@ import { loadEnvFile } from "node:process";
 import { fileURLToPath } from "node:url";
 import { ingestLocations } from "./ingest.js";
 import { JsonlStore } from "./store.js";
+import { AppStoreSource } from "./sources/app-store.js";
 import { DevvitRedditSource } from "./sources/devvit-reddit.js";
 import { GoogleMapsSource } from "./sources/google-maps.js";
 import { YelpSource } from "./sources/yelp.js";
@@ -25,7 +26,9 @@ try {
 
 const locations = JSON.parse(await readFile(configPath, "utf8"));
 
-const sources = [];
+// Apple's public reviews feed needs no credential, so it runs for every
+// location that names an App Store app.
+const sources = [new AppStoreSource()];
 if (process.env.REDDIT_DEVVIT_ENDPOINT || process.env.REDDIT_DEVVIT_TOKEN) {
   sources.push(new DevvitRedditSource({
     endpoint: process.env.REDDIT_DEVVIT_ENDPOINT,
@@ -39,8 +42,11 @@ if (process.env.GOOGLE_MAPS_API_KEY) {
   sources.push(new GoogleMapsSource({ apiKey: process.env.GOOGLE_MAPS_API_KEY }));
 }
 
-if (!sources.length) {
-  throw new Error(`No provider credentials found. See ${resolve(packageDirectory, "README.md")}`);
+if (!locations.some((location) => sources.some((source) => source.supports(location)))) {
+  throw new Error(
+    `No location in ${configPath} can be collected with the configured credentials.`
+      + ` See ${resolve(packageDirectory, "README.md")}`,
+  );
 }
 
 const summary = await ingestLocations({

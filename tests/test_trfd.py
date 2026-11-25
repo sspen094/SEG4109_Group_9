@@ -1,12 +1,22 @@
 """Unit and integration tests for the TRFD prototype. Run with: python -m pytest"""
+import json
 import sys
+import time
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import pytest  # noqa: E402
 
-from trfd import alerts, collectors, pipeline, sentiment, store, tagging  # noqa: E402
+from trfd import (alerts, collectors, pipeline, scheduler, sentiment, store,  # noqa: E402
+                  tagging)
+
+
+@pytest.fixture(autouse=True)
+def sample_data_only(tmp_path, monkeypatch):
+    """Keep tests on the sample dataset even if data/reviews.jsonl exists locally."""
+    monkeypatch.setattr(collectors, "REVIEWS_FILE", tmp_path / "no-live-data.jsonl")
 
 
 # ---- Pipeline filters ------------------------------------------------------
@@ -73,6 +83,8 @@ def test_vague_feedback_goes_to_manual_queue():
 
 def test_app_feedback_does_not_need_a_location():
     assert not tagging.tag("App crashes every time I open the trip planner.")["needs_review"]
+    review = tagging.tag("How the heck? Not easy to use", source="app_store")
+    assert review["category"] == "app_quality" and not review["needs_review"]
 
 
 # ---- Integration: full cycle, store, alerts, API ---------------------------
@@ -84,16 +96,21 @@ def db(tmp_path):
     return path
 
 
-def test_full_cycle_stores_clean_records(db):
-    conn = store.connect(db)
+@pytest.fixture
+def conn(db):
+    connection = store.connect(db)
+    yield connection
+    connection.close()
+
+
+def test_full_cycle_stores_clean_records(conn):
     rows = store.query(conn)
     assert len(rows) == len(collectors.collect_all()) - 2  # 1 duplicate, 1 off-topic
     assert not any("@example.com" in r["text"] or "555-0142" in r["text"] for r in rows)
     assert alerts.check(conn)[0]["route"] == "1"
 
 
-def test_override_is_logged(db):
-    conn = store.connect(db)
+def test_override_is_logged(conn):
     item = store.query(conn, needs_review=True)[0]
     updated = store.override(conn, item["id"], {"route": "7"})
     assert updated["route"] == "7" and updated["needs_review"] == 0
@@ -101,13 +118,209 @@ def test_override_is_logged(db):
     assert len(log) == 1 and log[0]["new_value"] == "7"
 
 
-def test_api_endpoints(db, monkeypatch):
+def login(client, username, password=store.DEMO_PASSWORD):
+    with client.session_transaction() as s:
+        s["csrf"] = "test-token"
+    return client.post("/login", data={"username": username, "password": password,
+                                       "csrf": "test-token"})
+
+
+def form_post(client, url, data):
+    with client.session_transaction() as s:
+        s["csrf"] = "test-token"
+    return client.post(url, data=dict(data, csrf="test-token"))
+
+
+@pytest.fixture
+def client(db, monkeypatch):
     monkeypatch.setattr(store, "DEFAULT_DB", db)
     from app import app
-    client = app.test_client()
+    return app.test_client()
+
+
+def test_api_endpoints(client):
     assert client.get("/health").get_json() == {"status": "ok"}
+    login(client, "staff")
     assert client.get("/").status_code == 200
     negatives = client.get("/api/feedback?sentiment=negative").get_json()
     assert negatives and all(r["sentiment"] == "negative" for r in negatives)
     assert client.get("/api/hotspots").get_json()["alerts"]
     assert client.post("/api/feedback/9999/override", json={"route": "1"}).status_code == 404
+
+
+# ---- Bridge from the Node ingestion package ---------------------------------
+
+def _jsonl(path, records):
+    path.write_text("\n".join(json.dumps(r) for r in records) + "\n", encoding="utf-8")
+    return path
+
+
+def test_ingestion_records_replace_the_sample_for_their_source(tmp_path):
+    recent = (datetime.now(timezone.utc) - timedelta(days=3)).strftime("%Y-%m-%dT%H:%M:%S.000Z")
+    path = _jsonl(tmp_path / "reviews.jsonl", [
+        {"id": "app-store:1", "recordType": "review", "source": "app-store",
+         "title": "Crashes", "text": "The app crashes on launch", "publishedAt": recent},
+        {"id": "reddit:t3_a", "recordType": "review", "source": "reddit", "title": "Platform",
+         "text": "Packed again", "publishedAt": recent, "locationSpecific": True,
+         "locationName": "Parliament Station"},
+        {"id": "google-maps:x", "recordType": "collection-reference", "source": "google-maps"},
+        {"id": "yelp:1", "recordType": "review", "source": "yelp", "text": "Out of scope",
+         "publishedAt": recent},
+        {"id": "app-store:old", "recordType": "review", "source": "app-store",
+         "text": "Older than twelve months", "publishedAt": "2020-01-01T00:00:00Z"},
+    ])
+    records, status = collectors.collect(path=path)
+    app_items = [r for r in records if r["source"] == "app_store"]
+    assert app_items == [{"source": "app_store", "text": "Crashes. The app crashes on launch",
+                          "posted_at": recent[:19], "origin": "live"}]
+    assert status["app_store"] == {"mode": "live", "records": 1}
+    assert status["google_maps"]["mode"] == "sample"  # no stored review text
+    assert not any(r["text"] == "Out of scope" for r in records)  # Yelp is out of scope
+    reddit = [r for r in records if r["source"] == "reddit"]
+    assert reddit[0]["location_hint"] == "Parliament Station"
+
+
+def test_location_hint_resolves_the_stop_when_the_text_names_none():
+    tags = tagging.tag("Platform was packed again", hint="Parliament Station")
+    assert tags["stop"] == "Parliament"
+    record = pipeline.process([{"source": "reddit", "posted_at": "2026-11-20T10:00:00",
+                                "text": "The train platform was packed again",
+                                "location_hint": "Parliament Station"}])[0]
+    assert record["stop"] == "Parliament" and "location_hint" not in record
+
+
+def test_sample_items_are_replaced_once_a_source_goes_live(db, conn, monkeypatch, tmp_path):
+    sample = store.query(conn, source="app_store")
+    assert sample and {r["origin"] for r in sample} == {"sample"}
+    recent = (datetime.now(timezone.utc) - timedelta(days=1)).strftime("%Y-%m-%dT%H:%M:%S.000Z")
+    monkeypatch.setattr(collectors, "REVIEWS_FILE", _jsonl(tmp_path / "live.jsonl", [
+        {"id": "app-store:9", "recordType": "review", "source": "app-store",
+         "text": "Trip planner keeps freezing", "publishedAt": recent}]))
+    pipeline.run_cycle(db)
+    rows = store.query(conn, source="app_store")
+    assert [(r["origin"], r["text"]) for r in rows] == [("live", "Trip planner keeps freezing")]
+    assert store.query(conn, source="reddit")  # sources still on sample data are untouched
+
+
+def test_disabled_sources_are_not_collected():
+    records, status = collectors.collect(enabled=["reddit"])
+    assert {r["source"] for r in records} == {"reddit"}
+    assert status["app_store"]["mode"] == "disabled"
+
+
+# ---- Incremental storage, overrides, settings ---------------------------------
+
+def test_cycles_are_incremental_and_keep_staff_overrides(db, conn):
+    before = store.count(conn)
+    item = store.query(conn, needs_review=True)[0]
+    store.override(conn, item["id"], {"sentiment": "positive"}, "staff")
+    stored, _ = pipeline.run_cycle(db)
+    assert stored == 0 and store.count(conn) == before
+    kept = store.get(conn, item["id"])
+    assert kept["sentiment"] == "positive" and kept["confidence"] == 1.0
+
+
+def test_invalid_override_is_rejected(conn):
+    with pytest.raises(ValueError):
+        store.override(conn, 1, {"route": "999"})
+    with pytest.raises(ValueError):
+        store.override(conn, 1, {"sentiment": "angry"})
+
+
+def test_alert_threshold_and_window_come_from_settings(conn):
+    store.set_setting(conn, "alert_threshold", 100)
+    assert alerts.check(conn) == []
+    store.set_setting(conn, "alert_threshold", 2)
+    assert alerts.check(conn, window_days=0)
+    assert alerts.check(conn, window_days=1) == []  # too few items in the latest day
+
+
+def test_weekly_trend_buckets_start_on_monday(conn):
+    t = store.trend(conn)
+    assert t["granularity"] == "week"
+    assert all(datetime.fromisoformat(p).weekday() == 0 for p in t["periods"])
+    assert sum(sum(v) for v in t["series"].values()) == store.count(conn)
+
+
+def test_stop_hotspots_have_coordinates(conn):
+    stops = store.stop_hotspots(conn)
+    hurdman = next(s for s in stops if s["stop"] == "Hurdman")
+    assert hurdman["negative"] >= 1 and 45 < hurdman["lat"] < 46
+
+
+def test_run_log_and_nightly_streak(conn):
+    assert store.recent_runs(conn)[0]["status"] == "ok"
+    for day, end in (("2026-11-20", "02:10:00"), ("2026-11-21", "07:00:00"),
+                     ("2026-11-22", "02:10:00"), ("2026-11-23", "02:12:00")):
+        conn.execute("INSERT INTO runs (kind, started_at, finished_at, status)"
+                     " VALUES ('nightly', ?, ?, 'ok')", (f"{day}T02:00:00", f"{day}T{end}"))
+    conn.commit()
+    assert store.nightly_streak(conn) == 2  # Nov 21 finished after 06:00 (TR8)
+
+
+def test_scheduler_next_run_and_missing_node(monkeypatch):
+    assert scheduler.next_run(datetime(2026, 11, 25, 1, 0)) == datetime(2026, 11, 25, 2, 0)
+    assert scheduler.next_run(datetime(2026, 11, 25, 3, 0)) == datetime(2026, 11, 26, 2, 0)
+    monkeypatch.setattr(scheduler.shutil, "which", lambda _name: None)
+    assert scheduler.run_ingestion().startswith("skipped")
+
+
+# ---- Role-based access (TR6) and forms -------------------------------------------
+
+def test_sign_in_is_required(client):
+    assert client.get("/").status_code == 302
+    assert client.get("/api/feedback").status_code == 401
+    assert login(client, "staff", "wrong-password").status_code == 200  # form shown again
+    assert client.get("/").status_code == 302
+
+
+def test_executives_are_read_only(client):
+    login(client, "executive")
+    assert client.get("/feedback/1").status_code == 200
+    assert client.post("/api/feedback/1/override", json={"route": "1"}).status_code == 403
+    assert form_post(client, "/feedback/1", {"route": "1"}).status_code == 403
+    assert client.get("/admin").status_code == 403
+
+
+def test_staff_can_retag_through_the_form(client, conn):
+    login(client, "staff")
+    item = store.query(conn, needs_review=True)[0]
+    response = form_post(client, f"/feedback/{item['id']}", {
+        "sentiment": item["sentiment"], "route": "7", "stop": "", "category": item["category"],
+        "next": "/feedback?needs_review=1"})
+    assert response.status_code == 302 and response.headers["Location"].endswith("needs_review=1")
+    updated = store.get(conn, item["id"])
+    assert updated["route"] == "7" and updated["needs_review"] == 0
+    assert store.history(conn, item["id"])[0]["changed_by"] == "staff"
+    assert client.get("/admin").status_code == 403
+
+
+def test_forms_need_the_csrf_token(client):
+    login(client, "admin")
+    assert client.post("/admin/settings", data={"alert_threshold": "5"}).status_code == 400
+
+
+def test_admin_manages_settings_and_users(client, conn):
+    login(client, "admin")
+    assert client.get("/admin").status_code == 200
+    form_post(client, "/admin/settings", {"alert_threshold": "9", "alert_window_days": "0",
+                                          "source_reddit": "1"})
+    assert store.get_setting(conn, "alert_threshold") == "9"
+    assert store.enabled_sources(conn) == ["reddit"]
+    form_post(client, "/admin/users", {"username": "liam", "password": "pw", "role": "staff"})
+    assert store.authenticate(conn, "liam", "pw")["role"] == "staff"
+
+
+def test_pages_load_fast_with_a_year_of_feedback(client, conn):
+    """TR7: pages load in under 3 s with 12 months of feedback."""
+    start = datetime.now() - timedelta(days=365)
+    store.save(conn, [{
+        "source": "reddit", "text": f"The 97 bus was late again, report {i}",
+        "posted_at": (start + timedelta(hours=i)).strftime("%Y-%m-%dT%H:%M:%S"),
+        "sentiment": "negative", "confidence": 0.7, "route": "97", "stop": None,
+        "category": "delays", "needs_review": False} for i in range(8000)])
+    login(client, "executive")
+    for path in ("/", "/feedback", "/feedback?route=97"):
+        began = time.perf_counter()
+        assert client.get(path).status_code == 200
+        assert time.perf_counter() - began < 3

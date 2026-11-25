@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% block title %}Overview{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" integrity="sha384-c6Rcwz4e4CITMbu/NBmnNS8yN2sC3cUElMEMfP3vqqKFp7GOYaaBBCqmaWBjmkjb" crossorigin="anonymous">
+{% endblock %}
+{% block content %}
+{% set total = summary.total %}
+{% macro share(n) %}{{ ((100 * n / total)|round|int) if total else 0 }}%{% endmacro %}
+<div class="page-head">
+  <h1>Overview</h1>
+  <p class="muted">Public rider feedback, scored for sentiment and tagged by route, stop and issue. The filters apply to every figure on this page.</p>
+</div>
+
+<form class="filters" method="get" aria-label="Filter the overview">
+  <label>Date range
+    <select name="days">{% for value, text in options.date_ranges %}<option value="{{ value }}" {% if filters.days == value %}selected{% endif %}>{{ text }}</option>{% endfor %}</select>
+  </label>
+  <label>Source
+    <select name="source"><option value="">All sources</option>{% for value, text in options.sources %}<option value="{{ value }}" {% if filters.source == value %}selected{% endif %}>{{ text }}</option>{% endfor %}</select>
+  </label>
+  <label>Route
+    <select name="route"><option value="">All routes</option>{% for value, text in options.routes %}<option value="{{ value }}" {% if filters.route == value %}selected{% endif %}>{{ text }}</option>{% endfor %}</select>
+  </label>
+  <label>Issue category
+    <select name="category"><option value="">All categories</option>{% for c in options.categories %}<option value="{{ c }}" {% if filters.category == c %}selected{% endif %}>{{ c|label }}</option>{% endfor %}</select>
+  </label>
+  <button type="submit">Apply</button>
+  {% if filters.values()|select|list %}<a class="button secondary" href="{{ url_for('overview') }}">Reset</a>{% endif %}
+</form>
+
+<section class="tiles" aria-label="Summary">
+  <div class="tile"><div class="label">Feedback items</div><div class="value">{{ "{:,}".format(total) }}</div><div class="sub">after de-duplication and relevance filtering</div></div>
+  <div class="tile"><div class="label"><span class="dot negative" aria-hidden="true"></span>Negative</div><div class="value">{{ summary.negative }}</div><div class="sub">{{ share(summary.negative) }} of items</div></div>
+  <div class="tile"><div class="label"><span class="dot neutral" aria-hidden="true"></span>Neutral</div><div class="value">{{ summary.neutral }}</div><div class="sub">{{ share(summary.neutral) }} of items</div></div>
+  <div class="tile"><div class="label"><span class="dot positive" aria-hidden="true"></span>Positive</div><div class="value">{{ summary.positive }}</div><div class="sub">{{ share(summary.positive) }} of items</div></div>
+  <div class="tile"><div class="label">Manual tagging queue</div><div class="value">{{ summary.review_queue }}</div><div class="sub"><a href="{{ url_for('feedback', needs_review=1) }}">Review queued items</a></div></div>
+</section>
+
+{% if alerts %}
+<section class="alerts" aria-label="Alerts">
+  {% for a in alerts %}
+  <div class="alert" role="status">
+    <span class="icon" aria-hidden="true">!</span>
+    <div><strong>Alert:</strong> {{ a.route|route_name }} has {{ a.negative }} negative items {% if alert_window|int > 0 %}in the last {{ alert_window }} days of collected feedback{% else %}in all collected feedback{% endif %} (threshold {{ alert_threshold }}).
+      <a href="{{ url_for('feedback', route=a.route, sentiment='negative') }}">View items</a></div>
+  </div>
+  {% endfor %}
+</section>
+{% endif %}
+
+<section class="sources" aria-label="Data sources">
+  {% for s in sources %}
+  <span class="source"><span class="status-dot {{ 'live' if s.mode == 'live' }}" aria-hidden="true"></span>{{ s.label }}:
+    {% if s.mode == 'live' %}live data{% elif s.mode == 'sample' %}sample dataset{% else %}{{ s.mode }}{% endif %}{% if s.records %} ({{ s.records }} collected){% endif %}</span>
+  {% endfor %}
+</section>
+
+<div class="grid">
+  <section class="card span-8" aria-labelledby="map-title">
+    <div class="card-head">
+      <h2 id="map-title">Station hotspots</h2>
+      <p>Circle area shows the negative items tagged to each stop. Select a stop to open its feedback.</p>
+    </div>
+    <div id="map" role="region" aria-label="Map of stops sized by negative feedback. The same data is in the stops table below."></div>
+    <div class="legend" aria-hidden="true">
+      <span><span class="dot negative"></span>Negative feedback (area shows the count)</span>
+      <span><span class="dot neutral"></span>No negative feedback</span>
+    </div>
+    <details>
+      <summary>Show stops table</summary>
+      <div class="table-wrap"><table>
+        <caption>Feedback tagged to each stop</caption>
+        <thead><tr><th scope="col">Stop</th><th scope="col">Line</th><th scope="col" class="num">Negative</th><th scope="col" class="num">All items</th></tr></thead>
+        <tbody>
+        {% for s in data.stops|sort(attribute='negative', reverse=true) %}
+          <tr><td><a href="{{ url_for('feedback', stop=s.stop) }}">{{ s.stop }}</a></td><td>{{ s.route|route_name }}</td><td class="num">{{ s.negative }}</td><td class="num">{{ s.total }}</td></tr>
+        {% endfor %}
+        </tbody>
+      </table></div>
+    </details>
+  </section>
+
+  <section class="card span-4" aria-labelledby="hot-title">
+    <div class="card-head">
+      <h2 id="hot-title">Route hotspots</h2>
+      <p>Negative items by route and issue category, worst first.</p>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th scope="col">Route</th><th scope="col">Issue</th><th scope="col" class="num">Negative</th></tr></thead>
+      <tbody>
+      {% for h in hotspots[:10] %}
+        <tr><td>{{ h.route|route_name }}</td><td><a href="{{ url_for('feedback', route=h.route, category=h.category, sentiment='negative') }}">{{ h.category|label }}</a></td><td class="num">{{ h.negative }}</td></tr>
+      {% else %}
+        <tr><td colspan="3" class="muted">No negative feedback tagged to a route.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table></div>
+  </section>
+
+  <section class="card span-12" aria-labelledby="trend-title">
+    <div class="card-head">
+      <h2 id="trend-title">Sentiment over time</h2>
+      <p>Feedback items per {{ data.trend.granularity }}, split by sentiment.</p>
+    </div>
+    <div class="chart-box tall"><canvas id="trend-chart" role="img" aria-label="Stacked bar chart of feedback items per {{ data.trend.granularity }} by sentiment. The data table follows."></canvas></div>
+    <details>
+      <summary>Show data table</summary>
+      <div class="table-wrap"><table>
+        <thead><tr><th scope="col">{{ data.trend.granularity|capitalize }}</th><th scope="col" class="num">Negative</th><th scope="col" class="num">Neutral</th><th scope="col" class="num">Positive</th></tr></thead>
+        <tbody>
+        {% for p in data.trend.periods %}
+          <tr><td>{{ p|period(data.trend.granularity) }}</td><td class="num">{{ data.trend.series.negative[loop.index0] }}</td><td class="num">{{ data.trend.series.neutral[loop.index0] }}</td><td class="num">{{ data.trend.series.positive[loop.index0] }}</td></tr>
+        {% endfor %}
+        </tbody>
+      </table></div>
+    </details>
+  </section>
+
+  <section class="card span-6" aria-labelledby="route-title">
+    <div class="card-head">
+      <h2 id="route-title">Sentiment by route</h2>
+      <p>Routes with the most negative feedback.</p>
+    </div>
+    <div class="chart-box" style="height: {{ [200, 64 + 32 * (data.byRoute|length)]|max }}px"><canvas id="route-chart" role="img" aria-label="Stacked bar chart of feedback by route and sentiment. The data table follows."></canvas></div>
+    <details>
+      <summary>Show data table</summary>
+      <div class="table-wrap"><table>
+        <thead><tr><th scope="col">Route</th><th scope="col" class="num">Negative</th><th scope="col" class="num">Neutral</th><th scope="col" class="num">Positive</th></tr></thead>
+        <tbody>
+        {% for r in data.byRoute %}
+          <tr><td><a href="{{ url_for('feedback', route=r.route) }}">{{ r.name }}</a></td><td class="num">{{ r.negative }}</td><td class="num">{{ r.neutral }}</td><td class="num">{{ r.positive }}</td></tr>
+        {% endfor %}
+        </tbody>
+      </table></div>
+    </details>
+  </section>
+
+  <section class="card span-6" aria-labelledby="cat-title">
+    <div class="card-head">
+      <h2 id="cat-title">Negative feedback by issue</h2>
+      <p>Negative items in each issue category.</p>
+    </div>
+    <div class="chart-box" style="height: {{ [200, 48 + 32 * (data.byCategory|length)]|max }}px"><canvas id="category-chart" role="img" aria-label="Bar chart of negative feedback items by issue category. The data table follows."></canvas></div>
+    <details>
+      <summary>Show data table</summary>
+      <div class="table-wrap"><table>
+        <thead><tr><th scope="col">Issue category</th><th scope="col" class="num">Negative</th><th scope="col" class="num">All items</th></tr></thead>
+        <tbody>
+        {% for c in data.byCategory %}
+          <tr><td><a href="{{ url_for('feedback', category=c.category) }}">{{ c.label }}</a></td><td class="num">{{ c.negative }}</td><td class="num">{{ c.total }}</td></tr>
+        {% endfor %}
+        </tbody>
+      </table></div>
+    </details>
+  </section>
+</div>
+
+<script id="overview-data" type="application/json">{{ data|tojson }}</script>
+{% endblock %}
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" integrity="sha384-bs/nf9FbdNouRbMiFcrcZfLXYPKiPaGVGplVbv7dLGECccEXDW+S3zjqSKR5ZEaD" crossorigin="anonymous" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" integrity="sha384-NElt3Op+9NBMCYaef5HxeJmU4Xeard/Lku8ek6hoPTvYkQPh3zLIrJP7KiRocsxO" crossorigin="anonymous" defer></script>
+<script src="{{ url_for('static', filename='overview.js') }}" defer></script>
+{% endblock %}
