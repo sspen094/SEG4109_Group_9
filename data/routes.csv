@@ -1,13 +1,179 @@
-route_id,name,aliases
-1,O-Train Line 1,Line 1|Confederation Line|LRT|O-Train Line 1
-2,O-Train Line 2,Line 2|Trillium Line|Trillium
-6,Route 6,
-7,Route 7,
-11,Route 11,
-12,Route 12,
-61,Route 61,
-62,Route 62,
-75,Route 75,
-88,Route 88,
-97,Route 97,
-98,Route 98,
+route_id,name,aliases,description,mode
+1,O-Train Line 1,Line 1|Confederation Line|LRT|O-Train Line 1,Blair <> Tunney's Pasture,train
+2,O-Train Line 2,Line 2|Trillium Line|Trillium|O-Train Line 2,Bayview <> Limebank,train
+4,O-Train Line 4,Line 4|O-Train Line 4|Airport Line|Airport Link,South Keys <> Airport ~ Aéroport,train
+5,Route 5,,Waller <> Elmvale,bus
+6,Route 6,,Greenboro <> Rockcliffe,bus
+7,Route 7,,Carleton <> St-Laurent,bus
+8,Route 8,,Gatineau <> Dow's Lake ~ Lac Dow,bus
+9,Route 9,,Rideau <> Hurdman,bus
+10,Route 10,,Hurdman <> Main,bus
+11,Route 11,,Waller <> Bayshore,bus
+12,Route 12,,Blair <> Tunney's Pasture,bus
+13,Route 13,,Gatineau <> Tunney's Pasture,bus
+14,Route 14,,St-Laurent <> Tunney's Pasture,bus
+15,Route 15,,Blair <> Parliament ~ Parlement,bus
+17,Route 17,,Wateridge <> Parliament ~ Parlement,bus
+18,Route 18,,St-Laurent <> Billings Bridge,bus
+19,Route 19,,Parliament ~ Parlement <> Hurdman,bus
+20,Route 20,,Rideau <> St-Laurent,bus
+21,Route 21,,Canotek <> Blair,bus
+23,Route 23,,Rothwell Heights & Blair,bus
+24,Route 24,,Chapel Hill <> St-Laurent,bus
+25,Route 25,,Blair / Wateridge <> Millennium,bus
+26,Route 26,,Pineview <> Blair,bus
+30,Route 30,,Blair <> Millennium,bus
+31,Route 31,,Tenth Line <> Place d'Orléans,bus
+32,Route 32,,Blair <> Chapel Hill,bus
+33,Route 33,,Place d'Orléans / Blair <> Portobello,bus
+34,Route 34,,Blair <> Chapel Hill,bus
+35,Route 35,,Blair <> Avalon,bus
+36,Route 36,,Place d'Orléans <> Innes,bus
+38,Route 38,,Blair <> Trim,bus
+39,Route 39,,Blair & N Rideau <> Millennium,bus
+40,Route 40,,St-Laurent <> Greenboro,bus
+41,Route 41,,St-Laurent <> Billings Bridge,bus
+42,Route 42,,Blair <> Hurdman,bus
+43,Route 43,,Karsh <> Greenboro,bus
+44,Route 44,,Billings Bridge <> Hurdman,bus
+45,Route 45,,Hospital ~ Hôpital <> Hurdman & N Rideau,bus
+47,Route 47,,Hawthorne <> St-Laurent,bus
+48,Route 48,,Hurdman <> Carleton,bus
+49,Route 49,,Elmvale <> Hurdman,bus
+51,Route 51,,Tunney's Pasture <> Britannia,bus
+53,Route 53,,Tunney's Pasture <> Baseline,bus
+56,Route 56,,King Edward & Civic <> Tunney's Pasture,bus
+57,Route 57,,Tunney's Pasture & N Rideau <> Carling Campus ~ Complexe Carling,bus
+58,Route 58,,Carling Campus/Abbott POC ~ Complexe Carling/Abbott POC <> Bayshore / Tunney's Pasture,bus
+60,Route 60,,Cope <> Terry Fox / Tunney's Pasture,bus
+61,Route 61,,Tunney's Pasture & N Rideau <> Stittsville,bus
+62,Route 62,,Tunney's Pasture <> Stittsville,bus
+63,Route 63,,Innovation / Briarbrook <> Tunney's Pasture,bus
+66,Route 66,,Tunneys Pasture <> Innovation,bus
+67,Route 67,,Terry Fox / Tunney's Pasture <> Cope,bus
+68,Route 68,,Baseline <> Terry Fox,bus
+70,Route 70,,Fallowfield <> Limebank & CFIA ~ ACIA,bus
+73,Route 73,,Limebank <> Fallowfield / Tunney's Pasture,bus
+74,Route 74,,Limebank <> Tunney's Pasture,bus
+75,Route 75,,Tunney's Pasture & N Rideau <> Barrhaven Centre / Cambrian,bus
+80,Route 80,,Barrhaven Centre <> Tunney's Pasture,bus
+81,Route 81,,Tunney's Pasture <> Bayshore,bus
+82,Route 82,,Baseline <> Lincoln Fields & Tunney's Pasture,bus
+84,Route 84,,Centrepointe <> Baseline,bus
+85,Route 85,,Lees <> Bayshore,bus
+86,Route 86,,Tunney's Pasture <> A - Antares & C - Colonnade,bus
+87,Route 87,,Tunney's Pasture <> Baseline,bus
+88,Route 88,,Hurdman <> Bayshore,bus
+90,Route 90,,Greenboro <> Hurdman,bus
+92,Route 92,,Greenboro <> Walkley / Hurdman,bus
+93,Route 93,,Rotary <> Leitrim,bus
+94,Route 94,,Leitrim <> Dun Skipper,bus
+98,Route 98,,Hawthorne <> Hurdman,bus
+99,Route 99,,Barrhaven Centre <> Limebank,bus
+105,Route 105,,Airport ~ Aéroport <> Hurdman / St-Laurent & N Rideau,bus
+110,Route 110,,Innovation / Briarbrook <> Limebank & Greenboro,bus
+111,Route 111,,Billings Bridge / Carleton <> Baseline,bus
+112,Route 112,,Billings Bridge <> Baseline,bus
+116,Route 116,,Greenboro <> Baseline,bus
+117,Route 117,,Baseline <> Greenboro,bus
+138,Route 138,,Place d'Orléans <> Hiawatha,bus
+153,Route 153,,Carlingwood <> Lincoln Fields,bus
+158,Route 158,,Bayshore <> Haanel,bus
+161,Route 161,,Hazeldean <> Terry Fox,bus
+162,Route 162,,Kanata West ~ Kanata Ouest <> Terry Fox,bus
+163,Route 163,,Terry Fox <> Kittiwake,bus
+165,Route 165,,Innovation <> Terry Fox,bus
+168,Route 168,,Hope Side <> Terry Fox,bus
+173,Route 173,,Citigate <> Fallowfield,bus
+187,Route 187,,Baseline <> Amberwood,bus
+189,Route 189,,Colonnade <> Baseline,bus
+197,Route 197,,Uplands / Greenboro,bus
+198,Route 198,,Limebank <> Greenboro,bus
+221,Route 221,,Blair <> Cumberland,bus
+222,Route 222,,Blair <> Vars,bus
+226,Route 226,,Chapel Hill <> Blair,bus
+228,Route 228,,Blair <> Navan / Sarsfield,bus
+234,Route 234,,Blair <> Tenth line,bus
+237,Route 237,,Blair <> Place d'Orléans,bus
+256,Route 256,,Tunney's Pasture <> Bridlewood,bus
+261,Route 261,,Tunney's Pasture <> Kittiwake,bus
+262,Route 262,,Tunney's Pasture <> Fernbank,bus
+263,Route 263,,Tunney's Pasture <> Richmond,bus
+265,Route 265,,Tunney's Pasture <> Terry Fox,bus
+266,Route 266,,Tunney's Pasture <> Springbrook,bus
+275,Route 275,,Tunney's Pasture <> Half Moon Bay,bus
+277,Route 277,,Tunney's Pasture <> Nepean Woods,bus
+279,Route 279,,Tunney's Pasture <> Manotick,bus
+283,Route 283,,Limebank <> Richmond / Munster,bus
+294,Route 294,,Greenboro <> Lester,bus
+299,Route 299,,Limebank <> Manotick,bus
+301,Route 301,,Bayshore / Carlingwood <> Richmond / Stittsville,bus
+302,Route 302,,St. Laurent / Place D'Orléans <> Cumberland,bus
+303,Route 303,,Bayshore / Carlingwood <> Dunrobin / Carp / Stittsville,bus
+304,Route 304,,Billings Bridge / South Keys <> Osgoode / Greely / Metcalfe,bus
+305,Route 305,,Carlingwood <> North Gower / Manotick,bus
+404,Route 404,,Canadian Tire Centre ~ Centre Canadian Tire,bus
+405,Route 405,,Canadian Tire Centre ~ Centre Canadian Tire,bus
+406,Route 406,,Canadian Tire Centre ~ Centre Canadian Tire,bus
+526,Route 526,,Chapel Hill <> Blair,bus
+539,Route 539,,Blair <> Millennium,bus
+561,Route 561,,Tunney's Pasture <> Terry Fox,bus
+562,Route 562,,Terry Fox <> Tunney's Pasture,bus
+563,Route 563,,Innovation <> Tunney's Pasture,bus
+565,Route 565,,Innovation <> Carling Campus ~ Complexe Carling,bus
+566,Route 566,,Tunney's Pasture <> Innovation / Carling Campus ~ Innovation /  Complexe Carling,bus
+582,Route 582,,Craig Henry <> Tunney's Pasture,bus
+602,Route 602,,De La Salle <> Rideau,bus
+606,Route 606,,Immaculata H.S <> Rockcliffe,bus
+609,Route 609,,De La Salle <> Elmvale,bus
+610,Route 610,,St. Pius <> Baseline,bus
+612,Route 612,,Béatrice Desloges / Gisele Lalonde <> Renaud,bus
+613,Route 613,,Hurdman,bus
+615,Route 615,,Parliament ~ Parlement,bus
+616,Route 616,,Gloucester H.S <> Parliament ~ Parlement,bus
+617,Route 617,,Omer-Deslauriers <> Hurdman,bus
+618,Route 618,,Louis Riel <> Millennium,bus
+619,Route 619,,Louis Riel <> Blair,bus
+620,Route 620,,St-Laurent,bus
+622,Route 622,,Colonel By / Gloucester H.S / Lester B. Pearson <> Renaud,bus
+624,Route 624,,Gloucester H.S <> Rideau,bus
+627,Route 627,,St. Matthew H.S <> Bearbrook,bus
+628,Route 628,,Louis-Riel <> Blair,bus
+630,Route 630,,Blair / Colonel By / Gloucester H.S <> Millennium,bus
+631,Route 631,,Colonel By / Gloucester H.S <> Innes,bus
+633,Route 633,,Lester B. Pearson <> St-Laurent,bus
+634,Route 634,,Mer bleue <> Place d'Orléans,bus
+637,Route 637,,St. Matthew H.S <> Chapel Hill,bus
+640,Route 640,,Brookfield <> Greenboro,bus
+641,Route 641,,Louis Riel <> Orléans,bus
+644,Route 644,,Canterbury H.S <> Greenboro,bus
+645,Route 645,,Hurdman,bus
+646,Route 646,,Canterbury H.S <> Terry Fox,bus
+647,Route 647,,Canterbury H.S. <> Hurdman,bus
+648,Route 648,,Louis Riel <> Orléans,bus
+649,Route 649,,Hillcrest <> Greenboro,bus
+659,Route 659,,Longfields-Davidson Heights <> Leikin,bus
+663,Route 663,,Earl of March H.S <> Terry Fox,bus
+664,Route 664,,Earl of March <> Terry Fox,bus
+667,Route 667,,Holy Trinity H.S <> Hope Side,bus
+668,Route 668,,Holy Trinity H.S <> Stonehaven,bus
+670,Route 670,,St. Pius <> Nepean South ~ Nepean Sud,bus
+673,Route 673,,Fallowfield <> Longfields Davidson Height,bus
+674,Route 674,,All Saints <> Innovation,bus
+676,Route 676,,St. Mother Teresa H.S <> Riverview,bus
+677,Route 677,,St. Joseph H.S <> Larkin,bus
+678,Route 678,,Louis Riel <> Orléans,bus
+679,Route 679,,St.Joseph H.S <> Cobble Hill,bus
+680,Route 680,,Merivale H.S <> Riverside South ~ Riverside Sud,bus
+684,Route 684,,Golflinks <> Longfields-Davidson Heights,bus
+686,Route 686,,Omer-Deslauriers <> Baseline,bus
+687,Route 687,,Merivale H.S <> Merivale Gardens,bus
+688,Route 688,,Merivale H.S <> Terry Fox,bus
+689,Route 689,,Billings Bridge <> Omer-Deslauriers,bus
+690,Route 690,,St. Mother Teresa H.S <> Barrhaven Centre,bus
+691,Route 691,,Omer-Deslauriers <> Bayshore,bus
+696,Route 696,,St. Mother Theresa H.S <> Larkin,bus
+697,Route 697,,Leitrim <> Ridgemont H.S,bus
+698,Route 698,,St.Patrick H.S <> Blohm / Lorry Greenberg,bus
+E1,Route E1,E1,Shuttle-Express Downtown ~ Navette-Express Centre-Ville <> Shuttle-Express Blair ~ Navette-Express Blair,bus
+R1,Route R1,R1,Tunney's Pasture <> Blair,bus

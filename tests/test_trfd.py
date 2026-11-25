@@ -2,6 +2,7 @@
 import json
 import sys
 import time
+import zipfile
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -9,8 +10,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import pytest  # noqa: E402
 
-from trfd import (alerts, collectors, pipeline, scheduler, sentiment, store,  # noqa: E402
-                  tagging)
+from trfd import (alerts, collectors, gtfs, pipeline, scheduler, sentiment,  # noqa: E402
+                  store, tagging)
 
 
 @pytest.fixture(autouse=True)
@@ -62,14 +63,70 @@ def test_sentiment_labels(text, expected):
 # ---- Tagging module --------------------------------------------------------
 
 @pytest.mark.parametrize("text, route", [
-    ("The 97 was a ghost bus", "97"),
+    ("The 88 was a ghost bus", "88"),
     ("Route 61 was packed", "61"),
     ("Thanks LRT", "1"),
     ("Trillium Line is quick", "2"),
+    ("Line 4 to the airport was empty", "4"),
+    ("The R1 shuttle skipped Hurdman", "R1"),
     ("waited 30 minutes", None),
+    ("the 20 minute wait again", None),
+    ("caught the 7:15 bus", None),
+    ("The 97 was retired in 2025", None),  # not in the current GTFS feed
 ])
 def test_route_resolution(text, route):
     assert tagging.resolve_route(text) == route
+
+
+def test_reference_data_covers_the_whole_network():
+    assert {"1", "2", "4"} <= tagging.ROUTE_IDS and len(tagging.ROUTES) > 150
+    assert tagging.ROUTE_NAMES["4"] == "O-Train Line 4"
+    assert len(tagging.STOPS) > 50 and all(s["aliases"] and s["lat"] for s in tagging.STOPS)
+    assert tagging.tag("The escalator at Pimisi is broken")["route"] == "1"
+    assert tagging.tag("Uplands station platform was icy")["route"] == "4"
+    bayview = tagging.tag("Bayview station was packed")  # served by Lines 1 and 2
+    assert bayview["stop"] == "Bayview" and bayview["route"] is None
+    assert not bayview["needs_review"]
+    assert tagging.resolve_stop("Stuck at Tunney’s again") == "Tunney's Pasture"
+
+
+def test_gtfs_loader_builds_routes_and_stations(tmp_path):
+    def table(header, *rows):
+        return "\n".join((header,) + rows) + "\n"
+
+    feed = tmp_path / "feed.zip"
+    with zipfile.ZipFile(feed, "w") as z:
+        z.writestr("routes.txt", table(
+            "route_id,route_short_name,route_long_name,route_type",
+            "1-373,1,Blair <> Tunney's Pasture,0", "2-354,2,Bayview <> Limebank,0",
+            "R1,R1,Tunney's Pasture <> Blair,3", "88,88,Hurdman <> Bayshore,3"))
+        z.writestr("stops.txt", table(
+            "stop_id,stop_name,stop_lat,stop_lon,location_type,parent_station",
+            "S1,TUNNEY'S PASTURE,45.4036,-75.7368,1,", "S1A,TUNNEY'S PASTURE 1A,45.4,-75.7,0,S1",
+            "S2,BAYVIEW,45.4089,-75.7223,1,", "S2A,BAYVIEW 1,45.4,-75.7,0,S2",
+            "S2B,BAYVIEW 2,45.4,-75.7,0,S2", "S3,PARLIAMENT ~ PARLEMENT,45.4213,-75.699,1,",
+            "B1,BANK / SOMERSET,45.41,-75.69,0,"))
+        z.writestr("trips.txt", table("route_id,service_id,trip_id",
+                                      "1-373,WK,T1", "2-354,WK,T2", "88,WK,T3"))
+        z.writestr("stop_times.txt", table(
+            "trip_id,arrival_time,departure_time,stop_id,stop_sequence",
+            "T1,08:00:00,08:00:00,S1A,1", "T1,08:05:00,08:05:00,S2A,2",
+            "T1,08:09:00,08:09:00,S3,3", "T2,08:00:00,08:00:00,S2B,1",
+            "T3,08:00:00,08:00:00,B1,1"))
+    (tmp_path / "stops.csv").write_text(
+        "stop_name,route_id,aliases,lat,lon\nTunney's Pasture,1,Tunney's|Tunneys,0,0\n",
+        encoding="utf-8")
+    routes, stations = gtfs.build(feed, data_dir=tmp_path)
+    assert [r["route_id"] for r in routes] == ["1", "2", "88", "R1"]
+    assert routes[0]["name"] == "O-Train Line 1" and "Confederation Line" in routes[0]["aliases"]
+    assert routes[2]["aliases"] == "" and routes[3]["aliases"] == "R1"
+    by_name = {s["stop_name"]: s for s in stations}
+    assert set(by_name) == {"Tunney's Pasture", "Bayview", "Parliament"}  # no street corners
+    assert by_name["Tunney's Pasture"]["route_id"] == "1"
+    assert "Tunney's" in by_name["Tunney's Pasture"]["aliases"].split("|")  # kept from CSV
+    assert by_name["Bayview"]["route_id"] == "" and by_name["Bayview"]["lines"] == "1 2"
+    assert "station Parlement" in by_name["Parliament"]["aliases"].split("|")
+    assert (tmp_path / "routes.csv").read_text(encoding="utf-8").startswith("route_id,name")
 
 
 def test_colloquial_stop_name():
@@ -202,6 +259,33 @@ def test_sample_items_are_replaced_once_a_source_goes_live(db, conn, monkeypatch
     assert store.query(conn, source="reddit")  # sources still on sample data are untouched
 
 
+def test_sample_items_follow_the_sample_file(db, conn, monkeypatch, tmp_path):
+    sample = json.loads(collectors.SAMPLE_FILE.read_text(encoding="utf-8"))
+    changed = [r for r in sample if r["source"] != "google_maps"] + [{
+        "source": "google_maps", "posted_at": "2026-11-20T10:00:00",
+        "text": "Pimisi station elevator is out of order again."}]
+    path = tmp_path / "sample.json"
+    path.write_text(json.dumps(changed), encoding="utf-8")
+    monkeypatch.setattr(collectors, "SAMPLE_FILE", path)
+    pipeline.run_cycle(db)
+    google = store.query(conn, source="google_maps")
+    assert [(r["text"], r["stop"], r["route"]) for r in google] == [
+        ("Pimisi station elevator is out of order again.", "Pimisi", "1")]
+
+
+def test_stored_tags_follow_a_new_route_list(db, conn):
+    stale = store.query(conn, stop="Hurdman")[0]
+    conn.execute("UPDATE feedback SET route = '97' WHERE id = ?", (stale["id"],))
+    conn.commit()
+    corrected = store.query(conn, needs_review=True)[0]
+    store.override(conn, corrected["id"], {"route": "7"}, "staff")
+    store.set_setting(conn, "reference_version", "an-older-feed")
+    pipeline.run_cycle(db)
+    assert store.get(conn, stale["id"])["route"] == "1"  # re-tagged from its text
+    assert store.get(conn, corrected["id"])["route"] == "7"  # staff changes are kept
+    assert "re-tagged" in store.recent_runs(conn, 1)[0]["message"]
+
+
 def test_disabled_sources_are_not_collected():
     records, status = collectors.collect(enabled=["reddit"])
     assert {r["source"] for r in records} == {"reddit"}
@@ -315,12 +399,12 @@ def test_pages_load_fast_with_a_year_of_feedback(client, conn):
     """TR7: pages load in under 3 s with 12 months of feedback."""
     start = datetime.now() - timedelta(days=365)
     store.save(conn, [{
-        "source": "reddit", "text": f"The 97 bus was late again, report {i}",
+        "source": "reddit", "text": f"The 88 bus was late again, report {i}",
         "posted_at": (start + timedelta(hours=i)).strftime("%Y-%m-%dT%H:%M:%S"),
-        "sentiment": "negative", "confidence": 0.7, "route": "97", "stop": None,
+        "sentiment": "negative", "confidence": 0.7, "route": "88", "stop": None,
         "category": "delays", "needs_review": False} for i in range(8000)])
     login(client, "executive")
-    for path in ("/", "/feedback", "/feedback?route=97"):
+    for path in ("/", "/feedback", "/feedback?route=88"):
         began = time.perf_counter()
         assert client.get(path).status_code == 200
         assert time.perf_counter() - began < 3

@@ -130,15 +130,38 @@ def save(conn, records):
     return conn.total_changes - before
 
 
-def purge_sample(conn, source):
-    """Remove a source's sample-dataset items once live data replaces them.
-    Returns the number of items removed."""
-    match = "FROM feedback WHERE source = ? AND origin = 'sample'"
-    conn.execute(f"DELETE FROM override_log WHERE feedback_id IN (SELECT id {match})",
-                 (source,))
-    removed = conn.execute(f"DELETE {match}", (source,)).rowcount
+def remove_sample(conn, source, keep=frozenset()):
+    """Remove a source's sample-dataset items except those whose fingerprint is
+    in keep: all of them once live data replaces the source, or the ones no
+    longer in the sample file. Returns the number of items removed."""
+    stale = [r["id"] for r in conn.execute(
+        "SELECT id, fingerprint FROM feedback WHERE source = ? AND origin = 'sample'",
+        (source,)) if r["fingerprint"] not in keep]
+    for item_id in stale:
+        conn.execute("DELETE FROM override_log WHERE feedback_id = ?", (item_id,))
+        conn.execute("DELETE FROM feedback WHERE id = ?", (item_id,))
     conn.commit()
-    return removed
+    return len(stale)
+
+
+def retag(conn):
+    """Re-run tagging on items staff have not changed, so stored tags follow a
+    new route and station list (a newer GTFS feed). The stored station is
+    passed as a hint, because collector hints themselves are not stored."""
+    touched = {r[0] for r in conn.execute("SELECT DISTINCT feedback_id FROM override_log")}
+    changed = 0
+    for r in conn.execute("SELECT * FROM feedback").fetchall():
+        if r["id"] in touched:
+            continue
+        tags = tagging.tag(r["text"], f"{r['stop']} station" if r["stop"] else None,
+                           r["source"])
+        new = (tags["route"], tags["stop"], tags["category"], int(tags["needs_review"]))
+        if new != (r["route"], r["stop"], r["category"], r["needs_review"]):
+            conn.execute("UPDATE feedback SET route = ?, stop = ?, category = ?,"
+                         " needs_review = ? WHERE id = ?", (*new, r["id"]))
+            changed += 1
+    conn.commit()
+    return changed
 
 
 def _where(filters, *extra):
@@ -206,6 +229,7 @@ def stop_hotspots(conn, **filters):
             continue
         c = counts.get(s["stop_name"], {})
         out.append({"stop": s["stop_name"], "route": s["route_id"] or None,
+                    "lines": (s.get("lines") or "").split(),
                     "lat": float(s["lat"]), "lon": float(s["lon"]),
                     "total": c.get("total", 0), "negative": c.get("negative") or 0})
     return out

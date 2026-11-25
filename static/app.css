@@ -164,3 +164,4 @@ dl.meta dd { margin: 0; }
 .nowrap { white-space: nowrap; }
 .clamp { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; line-clamp: 4; overflow: hidden; }
 code { overflow-wrap: anywhere; }
+.filters select { max-width: min(100%, 17rem); }

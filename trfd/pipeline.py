@@ -95,15 +95,25 @@ def run_cycle(db_path=None, kind="manual", note=""):
     try:
         raw, status = collectors.collect(store.enabled_sources(conn))
         records = process(raw)
-        removed = sum(store.purge_sample(conn, source)
-                      for source, info in status.items() if info["mode"] == "live")
+        retagged = 0
+        if store.get_setting(conn, "reference_version") != tagging.REFERENCE_VERSION:
+            retagged = store.retag(conn)
+            store.set_setting(conn, "reference_version", tagging.REFERENCE_VERSION)
+        removed = 0
+        for source, info in status.items():
+            if info["mode"] == "live":  # live data replaces the sample items
+                removed += store.remove_sample(conn, source)
+            elif info["mode"] == "sample":  # keep in step with the sample file
+                removed += store.remove_sample(conn, source, {
+                    store.fingerprint(r["text"]) for r in records if r["source"] == source})
         stored = store.save(conn, records)
         store.set_setting(conn, "source_status", json.dumps(status))
         raised = alerts.check(conn)
         share = located_share(records)
         message = "; ".join(p for p in (
             f"{len(records)} processed, {stored} new",
-            f"{removed} sample items replaced by live data" if removed else "",
+            f"{removed} sample items removed or replaced" if removed else "",
+            f"{retagged} items re-tagged for new route and station lists" if retagged else "",
             f"{share}% of location-specific items auto-tagged" if share is not None else "",
             note) if p)
         store.finish_run(conn, run_id, "ok", stored, len(raised), message)

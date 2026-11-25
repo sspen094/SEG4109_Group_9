@@ -101,7 +101,8 @@ def _options():
     return {
         "sources": [(s, collectors.LABELS[s]) for s in store.SOURCES],
         "sentiments": store.SENTIMENTS,
-        "routes": [(r["route_id"], r["name"]) for r in tagging.ROUTES],
+        "routes": [(r["route_id"], f"{r['name']}: {r['description']}" if r.get("description")
+                    else r["name"]) for r in tagging.ROUTES],
         "stops": tagging.STOP_NAMES,
         "categories": tagging.CATEGORIES,
         "date_ranges": DATE_RANGES,
