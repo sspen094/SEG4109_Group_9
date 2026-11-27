@@ -166,5 +166,305 @@
     "author": "sample_user_28",
     "posted_at": "2026-11-16T16:05:00",
     "text": "Billings Bridge stop is okay, nothing special."
+  },
+  {
+    "source": "reddit",
+    "posted_at": "2026-06-03T08:12:00",
+    "text": "The 6 bus left Rideau before the posted departure, so I waited 25 minutes for the next one."
+  },
+  {
+    "source": "reddit",
+    "posted_at": "2026-06-12T17:35:00",
+    "text": "Line 1 was packed between Hurdman and Blair during rush hour, with no room to move."
+  },
+  {
+    "source": "reddit",
+    "posted_at": "2026-06-26T09:10:00",
+    "text": "The 1 train was smooth and quick today, even at rush hour."
+  },
+  {
+    "source": "reddit",
+    "posted_at": "2026-07-04T07:45:00",
+    "text": "The elevator at Parliament station is broken, and the step-free entrance was locked."
+  },
+  {
+    "source": "reddit",
+    "posted_at": "2026-07-15T16:20:00",
+    "text": "The driver on the 7 was friendly and helped me with the ramp at Hurdman."
+  },
+  {
+    "source": "reddit",
+    "posted_at": "2026-07-30T12:05:00",
+    "text": "Route 7 uses stop 1234 on Bank Street during the weekday schedule."
+  },
+  {
+    "source": "reddit",
+    "posted_at": "2026-08-03T08:50:00",
+    "text": "Route 97 ran 18 minutes late at Baseline and the display kept changing."
+  },
+  {
+    "source": "reddit",
+    "posted_at": "2026-08-18T19:15:00",
+    "text": "Blair station was clean and easy to navigate after the renovation."
+  },
+  {
+    "source": "reddit",
+    "posted_at": "2026-08-28T15:40:00",
+    "text": "There were two buses on the 88 at Baseline around 5 pm."
+  },
+  {
+    "source": "reddit",
+    "posted_at": "2026-09-02T06:55:00",
+    "text": "The 75 skipped the stop near Lincoln Fields and left riders waiting in the rain."
+  },
+  {
+    "source": "reddit",
+    "posted_at": "2026-09-14T11:25:00",
+    "text": "The 6 arrived on time, and the operator was polite."
+  },
+  {
+    "source": "reddit",
+    "posted_at": "2026-09-24T20:05:00",
+    "text": "I transferred from Line 2 to Line 1 at Bayview just before noon."
+  },
+  {
+    "source": "reddit",
+    "posted_at": "2026-10-05T07:20:00",
+    "text": "Bayview station smelled awful this evening; garbage was still on the platform."
+  },
+  {
+    "source": "reddit",
+    "posted_at": "2026-10-11T18:35:00",
+    "text": "The 61 bus was stuck in traffic near Tunney's and arrived late again."
+  },
+  {
+    "source": "reddit",
+    "posted_at": "2026-10-27T13:00:00",
+    "text": "The new shelters near Tunney's are clean and helpful on rainy days."
+  },
+  {
+    "source": "reddit",
+    "posted_at": "2026-11-02T08:30:00",
+    "text": "The 1 train arrived at Parliament at 8:10, and the next train came four minutes later."
+  },
+  {
+    "source": "reddit",
+    "posted_at": "2026-11-08T17:10:00",
+    "text": "My 12 bus was delayed near Rideau and the arrival board gave the wrong time."
+  },
+  {
+    "source": "reddit",
+    "posted_at": "2026-11-16T10:45:00",
+    "text": "Caught the 97 at Lincoln Fields; it was comfortable and reliable today."
+  },
+  {
+    "source": "reddit",
+    "posted_at": "2026-11-20T14:00:00",
+    "text": "A broken escalator at Lyon made the transfer frustrating for anyone with luggage."
+  },
+  {
+    "source": "reddit",
+    "posted_at": "2026-11-24T21:15:00",
+    "text": "Route 88 was cancelled at Baseline and the next bus was packed."
+  },
+  {
+    "source": "app_store",
+    "posted_at": "2026-06-05T12:00:00",
+    "text": "The trip planner crashes when I save a favourite route."
+  },
+  {
+    "source": "app_store",
+    "posted_at": "2026-06-17T09:35:00",
+    "text": "Live tracking is reliable today and the arrival screen is easy to use."
+  },
+  {
+    "source": "app_store",
+    "posted_at": "2026-06-24T16:40:00",
+    "text": "The app shows a map, trip planner, service alerts and a list of saved routes."
+  },
+  {
+    "source": "app_store",
+    "posted_at": "2026-07-02T07:10:00",
+    "text": "Arrival times for the 97 are wrong by ten minutes, so I missed the bus."
+  },
+  {
+    "source": "app_store",
+    "posted_at": "2026-07-11T18:20:00",
+    "text": "The latest update made trip planning quick and simple."
+  },
+  {
+    "source": "app_store",
+    "posted_at": "2026-07-21T11:55:00",
+    "text": "I used the trip planner to compare two routes this morning."
+  },
+  {
+    "source": "app_store",
+    "posted_at": "2026-08-04T20:15:00",
+    "text": "Login is broken after the update, and I cannot buy a pass."
+  },
+  {
+    "source": "app_store",
+    "posted_at": "2026-08-13T08:25:00",
+    "text": "Love the clear fare options; buying a pass was easy."
+  },
+  {
+    "source": "app_store",
+    "posted_at": "2026-08-22T13:40:00",
+    "text": "The latest version changed where the fare settings appear."
+  },
+  {
+    "source": "app_store",
+    "posted_at": "2026-08-29T17:05:00",
+    "text": "The app is slow to open and freezes on my commute."
+  },
+  {
+    "source": "app_store",
+    "posted_at": "2026-09-06T10:30:00",
+    "text": "Notifications were accurate and helpful during my trip."
+  },
+  {
+    "source": "app_store",
+    "posted_at": "2026-09-12T19:45:00",
+    "text": "A 6:45 reminder is displayed for my trip from Blair station."
+  },
+  {
+    "source": "app_store",
+    "posted_at": "2026-09-21T07:35:00",
+    "text": "Notifications for cancelled trips arrive too late to be useful."
+  },
+  {
+    "source": "app_store",
+    "posted_at": "2026-10-03T14:10:00",
+    "text": "The app opens fast and the route map is clean."
+  },
+  {
+    "source": "app_store",
+    "posted_at": "2026-10-12T08:00:00",
+    "text": "Presto payment is unreliable and the app keeps crashing."
+  },
+  {
+    "source": "app_store",
+    "posted_at": "2026-10-20T21:25:00",
+    "text": "The latest version is useless because it freezes when checking fares."
+  },
+  {
+    "source": "app_store",
+    "posted_at": "2026-11-04T12:30:00",
+    "text": "Finally, a smooth and reliable way to check the Line 1 schedule."
+  },
+  {
+    "source": "app_store",
+    "posted_at": "2026-11-10T09:15:00",
+    "text": "Route search freezes whenever I check a stop; the app is useless."
+  },
+  {
+    "source": "app_store",
+    "posted_at": "2026-11-18T16:50:00",
+    "text": "The accessibility settings are broken, and small text is hard to read."
+  },
+  {
+    "source": "app_store",
+    "posted_at": "2026-11-25T18:10:00",
+    "text": "The app opens to a map, with trip planning and saved routes in the menu."
+  },
+  {
+    "source": "google_maps",
+    "posted_at": "2026-06-07T10:20:00",
+    "text": "The platform at Tunney's Pasture was dirty and full of garbage after the evening commute."
+  },
+  {
+    "source": "google_maps",
+    "posted_at": "2026-06-15T18:30:00",
+    "text": "Parliament station was clean and easy to transfer through."
+  },
+  {
+    "source": "google_maps",
+    "posted_at": "2026-06-23T09:05:00",
+    "text": "The 1 train stopped at Hurdman at 10:15; the next departure was 10:22."
+  },
+  {
+    "source": "google_maps",
+    "posted_at": "2026-07-06T07:55:00",
+    "text": "The elevator at Rideau station is broken; the accessible entrance was closed again."
+  },
+  {
+    "source": "google_maps",
+    "posted_at": "2026-07-16T15:40:00",
+    "text": "The operator on route 7 was friendly and the ramp worked well."
+  },
+  {
+    "source": "google_maps",
+    "posted_at": "2026-07-25T12:15:00",
+    "text": "There are four benches beside the westbound platform at Bayview."
+  },
+  {
+    "source": "google_maps",
+    "posted_at": "2026-08-02T08:45:00",
+    "text": "Waited 35 minutes for the 88 at Baseline because the bus was late."
+  },
+  {
+    "source": "google_maps",
+    "posted_at": "2026-08-11T11:10:00",
+    "text": "Tunney's Pasture is clean and the Line 1 connection was quick."
+  },
+  {
+    "source": "google_maps",
+    "posted_at": "2026-08-20T19:25:00",
+    "text": "Route 97 stops at Lincoln Fields beside the station entrance."
+  },
+  {
+    "source": "google_maps",
+    "posted_at": "2026-08-31T16:35:00",
+    "text": "The escalator at Lyon station is broken and the elevator signs are confusing."
+  },
+  {
+    "source": "google_maps",
+    "posted_at": "2026-09-05T13:50:00",
+    "text": "Route 6 was packed near Parliament this morning, with hardly any space to stand."
+  },
+  {
+    "source": "google_maps",
+    "posted_at": "2026-09-15T08:05:00",
+    "text": "The 6 arrived on time and the driver was polite at Lincoln Fields."
+  },
+  {
+    "source": "google_maps",
+    "posted_at": "2026-09-22T17:45:00",
+    "text": "I transferred to the 2 at Bayview and got off at Pimisi."
+  },
+  {
+    "source": "google_maps",
+    "posted_at": "2026-10-02T09:20:00",
+    "text": "Blair station smelled awful and the bins were overflowing."
+  },
+  {
+    "source": "google_maps",
+    "posted_at": "2026-10-14T14:30:00",
+    "text": "Rideau station staff were helpful and the entrance was easy to find."
+  },
+  {
+    "source": "google_maps",
+    "posted_at": "2026-10-26T06:50:00",
+    "text": "The 97 was cancelled at Lincoln Fields with no replacement bus."
+  },
+  {
+    "source": "google_maps",
+    "posted_at": "2026-11-05T18:05:00",
+    "text": "The platform at Blair felt safe and the signs were clear."
+  },
+  {
+    "source": "google_maps",
+    "posted_at": "2026-11-13T07:30:00",
+    "text": "Hurdman station's platform had garbage along the track after the rain."
+  },
+  {
+    "source": "google_maps",
+    "posted_at": "2026-11-19T20:10:00",
+    "text": "The 12 bus arrived late to Rideau in freezing rain."
+  },
+  {
+    "source": "google_maps",
+    "posted_at": "2026-11-23T11:45:00",
+    "text": "Trash was left around Hurdman platform and the entrance felt unsafe."
   }
 ]

@@ -167,6 +167,7 @@ def overview():
         "overview.html", filters=f, options=_options(), data=data,
         summary=store.summary(conn, **f), hotspots=store.hotspots(conn, **f),
         alerts=alerts.check(conn), sources=_source_status(conn),
+        last_updated=store.last_successful_run(conn),
         alert_threshold=store.get_setting(conn, "alert_threshold"),
         alert_window=store.get_setting(conn, "alert_window_days"))
 

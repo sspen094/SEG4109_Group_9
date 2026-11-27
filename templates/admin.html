@@ -8,7 +8,7 @@
 
 <div class="grid">
   <section class="card span-6" aria-labelledby="settings-title">
-    <div class="card-head"><h2 id="settings-title">Sources and alerts</h2><p>Sources without API access fall back to the anonymized sample dataset (scope exclusion 10).</p></div>
+    <div class="card-head"><h2 id="settings-title">Sources and alerts</h2><p>Sources without live data fall back to synthetic sample records (scope exclusion 10).</p></div>
     <form method="post" action="{{ url_for('admin_settings') }}">
       <input type="hidden" name="csrf" value="{{ csrf_token() }}">
       <fieldset style="border:0;padding:0;margin:0 0 16px">
@@ -16,7 +16,7 @@
         <div class="checks">
           {% for s in sources %}
           <label><input type="checkbox" name="source_{{ s.source }}" value="1" {% if s.enabled %}checked{% endif %}>
-            {{ s.label }} <span class="muted small">({% if s.mode == 'live' %}live, {{ s.records }} items in the last cycle{% elif s.mode == 'sample' %}sample dataset{% else %}{{ s.mode }}{% endif %})</span></label>
+            {{ s.label }} <span class="muted small">({% if s.mode == 'live' %}live, {{ s.records }} items in the last cycle{% elif s.mode == 'sample' %}synthetic sample data{% else %}{{ s.mode }}{% endif %})</span></label>
           {% endfor %}
         </div>
       </fieldset>

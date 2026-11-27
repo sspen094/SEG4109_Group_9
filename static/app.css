@@ -2,16 +2,16 @@
    sentiment is a diverging scale (negative red, neutral gray, positive blue). */
 :root {
   color-scheme: light;
-  --page: #f9f9f9;
+  --page: #f3f6fb;
   --surface: #ffffff;
-  --ink: #191919;
-  --ink-2: #666666;
-  --grid: #e7e7e7;
-  --axis: #c2c2c2;
-  --border: rgba(11, 11, 11, 0.10);
-  --accent: #2370cd;
+  --ink: #1b2939;
+  --ink-2: #617188;
+  --grid: #e3eaf2;
+  --axis: #b7c5d5;
+  --border: rgba(27, 55, 85, 0.11);
+  --accent: #1b5e9e;
   --accent-ink: #ffffff;
-  --wash: #eef5fd;
+  --wash: #eaf3fc;
   --neg: #ec4647;
   --neu: #c2c2c2;
   --pos: #257de0;
@@ -26,16 +26,16 @@
 @media (prefers-color-scheme: dark) {
   :root {
     color-scheme: dark;
-    --page: #0b0b0b;
-    --surface: #191919;
-    --ink: #efefef;
-    --ink-2: #9c9c9c;
-    --grid: #303030;
-    --axis: #474747;
+    --page: #101923;
+    --surface: #182432;
+    --ink: #edf3fa;
+    --ink-2: #a6b5c5;
+    --grid: #2a3949;
+    --axis: #4c6074;
     --border: rgba(255, 255, 255, 0.10);
-    --accent: #519ced;
-    --accent-ink: #0b0b0b;
-    --wash: #16263a;
+    --accent: #79b7ff;
+    --accent-ink: #102033;
+    --wash: #20344a;
     --neg: #eb6263;
     --neu: #474747;
     --pos: #338ced;
@@ -61,20 +61,32 @@ p { margin: 0 0 12px; }
 .skip:focus { left: 8px; }
 
 /* Header and navigation */
-.top { background: var(--surface); border-bottom: 1px solid var(--border); }
+.top { background: var(--surface); border-bottom: 1px solid var(--border); box-shadow: 0 2px 12px rgba(27, 55, 85, 0.05); }
 .top-inner { max-width: 1280px; margin: 0 auto; padding: 10px 16px; display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: center; }
-.brand { display: flex; align-items: center; gap: 10px; font-weight: 600; color: var(--ink); text-decoration: none; }
-.brand-mark { width: 28px; height: 28px; border-radius: 8px; background: var(--accent); display: grid; place-items: center; color: var(--accent-ink); font-size: 0.75rem; font-weight: 700; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); text-decoration: none; }
+.brand-mark { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(145deg, var(--accent), #4285c5); box-shadow: 0 3px 8px rgba(27, 94, 158, 0.22); display: grid; place-items: center; color: #ffffff; font-size: 0.75rem; font-weight: 700; }
+.nav-toggle { display: none; }
 nav ul { list-style: none; display: flex; flex-wrap: wrap; gap: 4px; margin: 0; padding: 0; }
-nav a { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 8px; color: var(--ink); text-decoration: none; }
+nav a { display: inline-flex; align-items: center; gap: 6px; padding: 7px 11px; border-radius: 8px; color: var(--ink); text-decoration: none; }
 nav a:hover { background: var(--wash); }
-nav a[aria-current="page"] { background: var(--wash); font-weight: 600; }
+nav a[aria-current="page"] { background: var(--wash); box-shadow: inset 0 0 0 1px var(--border); font-weight: 600; }
 .pill { font-size: 0.75rem; padding: 0 7px; border-radius: 999px; background: var(--page); border: 1px solid var(--border); font-variant-numeric: tabular-nums; }
 .who { margin-left: auto; display: flex; align-items: center; gap: 10px; font-size: 0.875rem; }
 .who form { margin: 0; }
 
+@media (max-width: 760px) {
+  .top-inner { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 12px; }
+  .brand { grid-column: 1 / -1; }
+  .nav-toggle:not([hidden]) { display: inline-flex; grid-column: 1; grid-row: 2; justify-self: start; }
+  #primary-nav { grid-column: 1 / -1; grid-row: 3; }
+  #primary-nav ul { flex-direction: column; align-items: stretch; }
+  #primary-nav a { width: 100%; }
+  .who { grid-column: 2; grid-row: 2; margin-left: 0; justify-content: flex-end; }
+}
+
 main { max-width: 1280px; margin: 0 auto; padding: 24px 16px 48px; }
 .page-head { margin-bottom: 16px; }
+.page-head h1 { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.035em; }
 footer { max-width: 1280px; margin: 0 auto; padding: 0 16px 32px; color: var(--ink-2); font-size: 0.8rem; }
 
 /* Messages */
@@ -83,8 +95,10 @@ footer { max-width: 1280px; margin: 0 auto; padding: 0 16px 32px; color: var(--i
 .flash.ok { border-left: 4px solid var(--good); }
 
 /* Filter row */
-.filters { display: flex; flex-wrap: wrap; gap: 10px 12px; align-items: flex-end; margin: 0 0 20px; }
+.filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr)); gap: 10px 12px; align-items: end; margin: 0 0 20px; }
 .filters label, .field { display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; color: var(--ink-2); }
+.filters select, .filters input { width: 100%; }
+.filters > button, .filters > .button { justify-self: start; }
 select, input[type="text"], input[type="search"], input[type="password"], input[type="number"] {
   font: inherit; font-size: 0.9rem; color: var(--ink); background: var(--surface);
   border: 1px solid var(--axis); border-radius: 8px; padding: 6px 8px; min-height: 36px; max-width: 100%;
@@ -129,6 +143,16 @@ summary { cursor: pointer; color: var(--accent); }
 .source { display: inline-flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 4px 12px; }
 .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--axis); display: inline-block; flex: none; }
 .status-dot.live { background: var(--good); }
+.updated-at { margin: -8px 0 16px; color: var(--ink-2); font-size: 0.8rem; }
+.takeaways { margin-bottom: 16px; padding: 16px 18px; border: 1px solid var(--border); border-radius: var(--radius); background: linear-gradient(120deg, var(--wash), var(--surface) 72%); }
+.takeaways-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px; margin-bottom: 12px; }
+.takeaways-head p { margin: 0; color: var(--ink-2); font-size: 0.85rem; }
+.takeaway-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); gap: 12px; }
+.takeaway { padding: 12px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); }
+.takeaway-label { color: var(--ink-2); font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+.takeaway h3 { margin: 6px 0; font-size: 1.1rem; }
+.takeaway p { margin: 0 0 8px; font-size: 0.9rem; }
+.takeaways-empty { margin: 0; color: var(--ink-2); }
 
 /* Tables */
 .table-wrap { overflow-x: auto; }

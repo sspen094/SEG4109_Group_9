@@ -14,7 +14,8 @@
     <a class="brand" href="{{ url_for('overview') }}"><span class="brand-mark" aria-hidden="true">TR</span>Transit Rider Feedback Dashboard</a>
     {% if user %}
     {% set here = request.endpoint %}
-    <nav aria-label="Main">
+    <button class="nav-toggle" type="button" aria-controls="primary-nav" aria-expanded="false" hidden>Menu</button>
+    <nav id="primary-nav" aria-label="Main">
       <ul>
         <li><a href="{{ url_for('overview') }}" {% if here == 'overview' %}aria-current="page"{% endif %}>Overview</a></li>
         <li><a href="{{ url_for('feedback') }}" {% if here == 'feedback' and not request.args.get('needs_review') %}aria-current="page"{% endif %}>Feedback</a></li>
@@ -40,7 +41,8 @@
   {% endwith %}
   {% block content %}{% endblock %}
 </main>
-<footer>SEG4105 Group 9 prototype. Usernames, handles and contact details are removed before storage (TR9). Sources without API access are shown on an anonymized sample dataset.</footer>
+<footer>SEG4105 Group 9 prototype. Usernames, handles and contact details are removed before storage (TR9). Sources without live data use clearly labelled synthetic examples.</footer>
+  <script src="{{ url_for('static', filename='app.js') }}" defer></script>
 {% block scripts %}{% endblock %}
 </body>
 </html>

@@ -51,8 +51,50 @@
 <section class="sources" aria-label="Data sources">
   {% for s in sources %}
   <span class="source"><span class="status-dot {{ 'live' if s.mode == 'live' }}" aria-hidden="true"></span>{{ s.label }}:
-    {% if s.mode == 'live' %}live data{% elif s.mode == 'sample' %}sample dataset{% else %}{{ s.mode }}{% endif %}{% if s.records %} ({{ s.records }} collected){% endif %}</span>
+    {% if s.mode == 'live' %}live data{% elif s.mode == 'sample' %}synthetic sample data{% else %}{{ s.mode }}{% endif %}{% if s.records %} ({{ s.records }} collected){% endif %}</span>
   {% endfor %}
+</section>
+<p class="updated-at">
+  {% if last_updated %}
+  Last successful collection: <time datetime="{{ last_updated }}">{{ last_updated|replace('T', ' ') }}</time> (local time)
+  {% else %}
+  No successful collection has run yet.
+  {% endif %}
+</p>
+
+{% set top_hotspot = hotspots|first %}
+{% set top_issue = data.byCategory|sort(attribute='total', reverse=true)|first %}
+<section class="takeaways" aria-labelledby="takeaways-title">
+  <div class="takeaways-head">
+    <h2 id="takeaways-title">Key takeaways</h2>
+    <p>Highlights from the current filters</p>
+  </div>
+  {% if top_hotspot or top_issue %}
+  <div class="takeaway-grid">
+    <article class="takeaway">
+      <span class="takeaway-label">Most negative route and issue</span>
+      {% if top_hotspot %}
+      <h3>{{ top_hotspot.route|route_name }}</h3>
+      <p><strong>{{ top_hotspot.negative }}</strong> negative items tagged as {{ top_hotspot.category|label }}.</p>
+      <a href="{{ url_for('feedback', route=top_hotspot.route, category=top_hotspot.category, sentiment='negative') }}">Review feedback</a>
+      {% else %}
+      <p>No negative route hotspots in this selection.</p>
+      {% endif %}
+    </article>
+    <article class="takeaway">
+      <span class="takeaway-label">Most common issue</span>
+      {% if top_issue %}
+      <h3>{{ top_issue.label }}</h3>
+      <p><strong>{{ top_issue.total }}</strong> items across all sentiments.</p>
+      <a href="{{ url_for('feedback', category=top_issue.category) }}">Explore this issue</a>
+      {% else %}
+      <p>No issues to summarize in this selection.</p>
+      {% endif %}
+    </article>
+  </div>
+  {% else %}
+  <p class="takeaways-empty">No takeaways for these filters. Try broadening the date range or resetting the filters.</p>
+  {% endif %}
 </section>
 
 <div class="grid">

@@ -167,6 +167,17 @@ def test_full_cycle_stores_clean_records(conn):
     assert alerts.check(conn)[0]["route"] == "1"
 
 
+def test_last_successful_run_ignores_failed_and_running_runs(conn):
+    successful_run = store.last_successful_run(conn)
+    assert successful_run
+
+    failed_id = store.start_run(conn, "manual")
+    store.finish_run(conn, failed_id, "failed")
+    store.start_run(conn, "manual")
+
+    assert store.last_successful_run(conn) == successful_run
+
+
 def test_override_is_logged(conn):
     item = store.query(conn, needs_review=True)[0]
     updated = store.override(conn, item["id"], {"route": "7"})
@@ -198,7 +209,11 @@ def client(db, monkeypatch):
 def test_api_endpoints(client):
     assert client.get("/health").get_json() == {"status": "ok"}
     login(client, "staff")
-    assert client.get("/").status_code == 200
+    overview = client.get("/")
+    assert overview.status_code == 200
+    assert b"Key takeaways" in overview.data
+    assert b"Last successful collection" in overview.data
+    assert b"Most negative route and issue" in overview.data
     negatives = client.get("/api/feedback?sentiment=negative").get_json()
     assert negatives and all(r["sentiment"] == "negative" for r in negatives)
     assert client.get("/api/hotspots").get_json()["alerts"]
@@ -320,6 +335,12 @@ def test_alert_threshold_and_window_come_from_settings(conn):
 
 
 def test_weekly_trend_buckets_start_on_monday(conn):
+    now = datetime.now().replace(hour=12, minute=0, second=0, microsecond=0)
+    rows = conn.execute("SELECT id FROM feedback ORDER BY id").fetchall()
+    for index, row in enumerate(rows):
+        posted_at = (now - timedelta(days=index % 28)).strftime("%Y-%m-%dT%H:%M:%S")
+        conn.execute("UPDATE feedback SET posted_at = ? WHERE id = ?", (posted_at, row["id"]))
+    conn.commit()
     t = store.trend(conn)
     assert t["granularity"] == "week"
     assert all(datetime.fromisoformat(p).weekday() == 0 for p in t["periods"])

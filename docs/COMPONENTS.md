@@ -5,7 +5,7 @@ Transit Rider Feedback Dashboard (TRFD), SEG4105 Group 9. The dashboard and proc
 ## 1. Component Inventory
 | Component / Module | Directory / File Path | Primary Responsibility | Key Dependencies |
 | :--- | :--- | :--- | :--- |
-| Presentation / UI (dashboard) | /templates/, /static/ | Sign-in page; overview with summary tiles, alerts, source status, stop hotspot map, sentiment charts and route hotspots; filterable feedback table; manual tagging queue; retagging screen with override history; admin page | Jinja2 (bundled with Flask), Chart.js 4.4.1 and Leaflet 1.9.4 from cdnjs (each figure also has a data table) |
+| Presentation / UI (dashboard) | /templates/, /static/ | Sign-in page; responsive navigation; overview with key takeaways, last successful collection time, summary tiles, alerts, source status, stop hotspot map, sentiment charts and route hotspots; filterable feedback table; manual tagging queue; retagging screen with override history; admin page | Jinja2 (bundled with Flask), Chart.js 4.4.1 and Leaflet 1.9.4 from cdnjs (each figure also has a data table) |
 | Web / API layer | /app.py | HTTP routes for the pages and JSON API, query-string filters, staff overrides, admin actions, CSRF tokens on forms, startup collection cycle | Flask 3.1 |
 | Access control | /trfd/auth.py | Role checks for executive (read-only), staff (overrides) and admin (users, sources, thresholds) (TR6) | Flask sessions; passwords hashed with Werkzeug |
 | Ingestion package (Node.js) | /packages/ingestion | Provider adapters for Reddit (through the Devvit app), App Store reviews (Apple's public RSS feed), Google Places and Yelp; normalizes records, drops reviewer names, appends new records to `data/reviews.jsonl` | Node.js 20.12+, no npm dependencies |

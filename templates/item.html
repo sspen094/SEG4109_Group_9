@@ -7,7 +7,7 @@
     <div class="card-head"><h1 id="item-title">Feedback item {{ item.id }}</h1></div>
     <blockquote>{{ item.text }}</blockquote>
     <dl class="meta">
-      <dt>Source</dt><dd>{{ item.source|label }}{% if item.origin == 'sample' %} (anonymized sample dataset){% else %} (live data){% endif %}</dd>
+      <dt>Source</dt><dd>{{ item.source|label }}{% if item.origin == 'sample' %} (synthetic sample data){% else %} (live data){% endif %}</dd>
       <dt>Posted</dt><dd>{{ item.posted_at|replace('T', ' ') }}</dd>
       <dt>Sentiment</dt><dd><span class="dot {{ item.sentiment }}" aria-hidden="true"></span>{{ item.sentiment|capitalize }} (confidence {{ '%.2f'|format(item.confidence) }})</dd>
       <dt>Route</dt><dd>{{ item.route|route_name or 'None' }}</dd>

@@ -3,7 +3,7 @@
 Live records come from the Node ingestion package (packages/ingestion), which
 calls the official platform APIs and public feeds and appends to
 data/reviews.jsonl. A source with no usable live records in that file is
-demonstrated on the anonymized sample dataset in data/sample_feedback.json
+demonstrated with synthetic sample data in data/sample_feedback.json
 instead (scope exclusion 10), so the dashboard always runs.
 """
 import json

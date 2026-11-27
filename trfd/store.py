@@ -430,6 +430,13 @@ def recent_runs(conn, limit=10):
         "SELECT * FROM runs ORDER BY id DESC LIMIT ?", (limit,))]
 
 
+def last_successful_run(conn):
+    row = conn.execute(
+        "SELECT finished_at FROM runs WHERE status = 'ok' AND finished_at IS NOT NULL"
+        " ORDER BY finished_at DESC, id DESC LIMIT 1").fetchone()
+    return row[0] if row else None
+
+
 def finished_on_time(run):
     """TR8: a nightly cycle must finish before 06:00 on the night it started."""
     end = run.get("finished_at") or ""

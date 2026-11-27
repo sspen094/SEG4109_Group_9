@@ -29,8 +29,9 @@ sources, alert thresholds and users). The password for all three is
 `trfd-demo`; set `TRFD_DEMO_PASSWORD` before the first run to change it.
 
 On startup the app runs one pipeline cycle. Sources with records in
-`data/reviews.jsonl` show live data; the others use the anonymized sample
-dataset in `data/sample_feedback.json` (scope exclusion 10).
+`data/reviews.jsonl` show live data; the others use the synthetic sample data
+in `data/sample_feedback.json` (scope exclusion 10). These fabricated
+demonstration records are not real rider reviews.
 
 ## Collect live feedback
 
